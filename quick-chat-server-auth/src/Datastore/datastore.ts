@@ -46,3 +46,20 @@ export const addUser = async({username , password , email }:{username: string , 
     return true;
  }  
 
+
+ export const fetchUser = async(username : string , password : string) : Promise<any> =>{
+      if(username && password){
+          const query = datastore.createQuery("ChatUser" , "User").filter("username" , "=" , username).limit(1);
+
+          const [user] = await datastore.runQuery(query);
+
+          if(user.length > 0 ){
+            return user[0];
+          }else{
+            return null;
+          }
+      }
+
+      return null;
+ }
+
