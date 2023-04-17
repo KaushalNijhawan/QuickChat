@@ -23,8 +23,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-        {!checkToken() ?
-          <Route path="/signUp" element={<Signup />} /> : null}
+        <Route path="/signUp" element={<Signup />} />
         {!checkToken() ? <Route path="/chat" element={<ChatWindow />} /> : null}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
