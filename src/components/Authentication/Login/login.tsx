@@ -1,13 +1,57 @@
 import { useNavigate } from "react-router-dom";
-
+import {useReducer} from "react";
+import axios from "axios";
+interface User{
+	username : string;
+	password: string;
+}
 export const Login = () => {
 	const navigate = useNavigate();
-	const handleLoginClick = () =>{
-		navigate("/chat");
+	
+	const reducer = (state = {username : "" , password : ""}, action : any ): User =>{
+		
+		switch(action.type){
+			case "username":
+				state.username = action.username;
+				return state;
+			case "password":
+				state.password = action.password;
+				return state;
+			default:
+				return state;
+		}
+	}
+
+	const [state , dispatch] = useReducer(reducer, {username : "" , password : ""});
+	
+
+	const handleLoginClick = async (event: any) =>{
+		event.preventDefault();
+		if(state.username && state.password){
+			const response = await axios.post("http://localhost:3000/auth/login" , state ,  {
+				headers:{
+					Accept: "application/json"
+				}
+			});
+
+			console.log(response);
+		}
+		
 	}
 
 	const handleSignInClick = () =>{
 		navigate("/signUp");
+	}
+
+	const handleChange = (event: any , type : string)=>{
+		if(event && type){
+			if(type == "username"){
+				dispatch({type: type , username : event.target.value});
+			}else{
+				dispatch({type: type , password : event.target.value});
+			}
+			
+		}
 	}
 
     return (
@@ -20,13 +64,13 @@ export const Login = () => {
 						<form>
 							<div className="mb-3">
 								<label htmlFor="username" className="form-label">Username</label>
-								<input type="text" className="form-control" id="username" name="username" required />
+								<input type="text" className="form-control" id="username" name="username" required onChange={(e)=> handleChange(e, "username")}/>
 							</div>
 							<div className="mb-3">
 								<label htmlFor="password" className="form-label">Password</label>
-								<input type="password" className="form-control" id="password" name="password" required />
+								<input type="password" className="form-control" id="password" name="password" required onChange={(e)=> handleChange(e, "password")}/>
 							</div>
-							<button type="submit" className="btn btn-primary w-100" onClick={handleLoginClick}>Login</button>
+							<button type="submit" className="btn btn-primary w-100" onClick={(e) => handleLoginClick(e)} >Login</button>
                             <button type="submit" className="btn btn-dark w-100" style={{marginTop:"1%"}} onClick={handleSignInClick}>Register</button>
 						</form>
 					</div>

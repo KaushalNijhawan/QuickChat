@@ -16,6 +16,15 @@ export const userSlice = createSlice({
     reducers:{
         setCurrentUser:(state , action : any)=>{
             console.log(action);
+            if(action && action.payload && action.payload.username && action.payload.email && action.payload.token){
+                state.email = action.payload.email;
+                state.token = action.payload.token;
+                state.username = action.payload.username;
+            }
         }
     }
 });
+
+export const {setCurrentUser } = userSlice.actions;
+
+export default userSlice.reducer;

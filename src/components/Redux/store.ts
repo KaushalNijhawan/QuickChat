@@ -1,10 +1,12 @@
 import { configureStore  } from '@reduxjs/toolkit'
 import { socketSlice } from  "./ClientRedux";
+import {userSlice} from "./UserRedux";
 import { useDispatch, useSelector } from 'react-redux'
 import type { TypedUseSelectorHook } from 'react-redux'
 export const store = configureStore({
   reducer: {
-    socket  : socketSlice.reducer
+    socket  : socketSlice.reducer,
+    user : userSlice.reducer 
   },
 });
 

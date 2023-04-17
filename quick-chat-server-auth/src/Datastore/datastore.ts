@@ -1,4 +1,5 @@
 import {Datastore} from "@google-cloud/datastore";
+import { User } from "./UserModel/UserModel";
 
 const datastore = new Datastore({
     projectId: "upbeat-glow-381318",
@@ -17,9 +18,14 @@ export const addUser = async({username , password , email}:{username: string , p
             }
         }
        let response  = await datastore.save(task);
+       console.log(response);
        return response;
     }
 
     return null;
   }
+
+ const checkUser = (user : User) =>{
+
+ }
 
