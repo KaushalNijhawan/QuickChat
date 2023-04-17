@@ -9,7 +9,7 @@ router.post("/login" , (req, res)=>{
     res.status(200).send("Verified User!");    
 });
 
-router.get("/signUp" , (req, res)=>{
+router.post("/signUp" , (req, res)=>{
     let response : User = req.body;
     addUserDetails(response);
     res.status(200).send("Verified User!");
