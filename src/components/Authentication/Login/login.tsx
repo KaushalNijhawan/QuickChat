@@ -28,13 +28,16 @@ export const Login = () => {
 	const handleLoginClick = async (event: any) =>{
 		event.preventDefault();
 		if(state.username && state.password){
-			const response = await axios.post("http://localhost:3000/auth/login" , state ,  {
+			try{
+				const response = await axios.post("http://localhost:3000/auth/login" , state ,  {
 				headers:{
 					Accept: "application/json"
 				}
-			});
-
-			console.log(response);
+				});
+				navigate("/chat");
+			}catch(err){
+				console.log(err);
+			}
 		}
 		
 	}
