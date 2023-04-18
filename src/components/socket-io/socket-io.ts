@@ -7,9 +7,7 @@ export class SocketIO{
     }
 
     init = () =>{
-        return io('http://localhost:4000', {
-            autoConnect : false
-        }).connect();
+        return io('http://localhost:4000');
 
     }
 

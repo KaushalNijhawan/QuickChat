@@ -11,20 +11,22 @@ import { useDispatch } from "react-redux";
 
 function App() {
   const dispatch = useDispatch();
-  const checkToken = (): boolean => {
-    if (store && store.getState() && store.getState().user && store.getState().user.token) {
-      return false;
-    } else {
-      return true;
-    }
-  }
+  // const checkToken = (): boolean => {
+  //   console.log(store.getState().user);
+  //   if (store && store.getState() && store.getState().user && store.getState().user.token) {
+  //     return false;
+  //   } else {
+  //     return true;
+  //   }
+  // }
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signUp" element={<Signup />} />
-        {!checkToken() ? <Route path="/chat" element={<ChatWindow />} /> : null}
+        {/* {!checkToken() ?  */}
+        <Route path="/chat" element={<ChatWindow />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

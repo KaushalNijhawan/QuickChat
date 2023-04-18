@@ -8,10 +8,14 @@ const router = express.Router();
 router.post("/login" , async (req, res)=>{
     let request : User = req.body;
     let response = await verifyUserLogin(request.username , request.password);
-    if(response){
+    if(response && response.email && response.username){
         const token : string = tokenGenerator(request);
-        res.setHeader("token" , token);
-        res.status(200).send("Verified User!");   
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).send({
+            username : request.username , 
+            token : token,
+            email : response.email
+        });   
     }else{
         res.status(400).send("Invalid username or Password!");   
     }

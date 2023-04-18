@@ -1,13 +1,13 @@
 import { createSlice , PayloadAction} from '@reduxjs/toolkit';
 interface User{
-    username : string,
-    email : string ,
-    token: string
+    username : string;
+    token: string;
+    email : string;
 }
 const initialState : User  = { 
     username : "",
-    email : "",
-    token : ""       
+    token : "" ,
+    email : ""    
 };
 
 export const userSlice = createSlice({
@@ -16,10 +16,10 @@ export const userSlice = createSlice({
     reducers:{
         setCurrentUser:(state , action : any)=>{
             console.log(action);
-            if(action && action.payload && action.payload.username && action.payload.email && action.payload.token){
-                state.email = action.payload.email;
+            if(action && action.payload && action.payload.username  && action.payload.token){
                 state.token = action.payload.token;
                 state.username = action.payload.username;
+                state.email = action.payload.email;
             }
         }
     }

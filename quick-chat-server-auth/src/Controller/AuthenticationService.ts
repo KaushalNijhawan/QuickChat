@@ -2,23 +2,23 @@ import bcrypt from "bcrypt";
 import { User } from "../Datastore/UserModel/UserModel";
 import { addUser, checkUser, fetchUser } from "../Datastore/datastore";
 
-export const verifyUserLogin  = async (username : string , password : string) : Promise<Boolean>=>{
+export const verifyUserLogin  = async (username : string , password : string) : Promise<any>=>{
     if(username && password){
         const user = await fetchUser(username , password);
         if(user && user.password){
             let passwordEncoded = user.password;
             let checkMatch : boolean = await bcrypt.compare(password , passwordEncoded);
             if(checkMatch){
-                return true;
+                return user;
             }else{
-                return false;
+                return null;
             }
         }else{
-            return false;
+            return null;
         }
     }
 
-    return false;
+    return null;
 }
 
 export const addUserDetails = async (userObject : User): Promise<boolean> =>{
