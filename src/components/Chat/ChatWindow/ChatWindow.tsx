@@ -55,6 +55,9 @@ export const ChatWindow = () => {
     handlejoinSocket();
   }, []);
   const handlejoinSocket = async () => {
+    if(store.getState().user && store.getState().user.token){
+        
+    }
     let response: any = new SocketIO().init();
     dispatching(setConnection(response));
     response.emit("new-join", store.getState().user);
