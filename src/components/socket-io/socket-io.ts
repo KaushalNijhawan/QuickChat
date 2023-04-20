@@ -7,7 +7,13 @@ export class SocketIO{
     }
 
     init = () =>{
-        return io('http://localhost:4000');
+        return io('http://localhost:4000', 
+        //{
+        //    auth:{
+        //     token : token
+        //    } 
+        //}
+        );
 
     }
 
