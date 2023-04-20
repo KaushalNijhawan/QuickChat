@@ -7,7 +7,7 @@ export const ChatWindow = () => {
       <div className="col-md-4">
         <div className="card">
           <div className="card-header">
-            <h4>Users</h4>
+            <span className="d-inline-flex"><i className="bi bi-people-fill h4 mx-2"></i><h4>Users</h4></span>
           </div>
           <div className="card-body">
             <ul className="list-group">
@@ -45,7 +45,7 @@ export const ChatWindow = () => {
             <form>
               <div className="input-group">
                 <input type="text" className="form-control" placeholder="Type your message..." />
-                <button type="submit" className="btn btn-primary"><i className="bi bi-arrow-up" style={{fontSize:"30px"}}></i></button>
+                <button type="submit" className="btn btn-primary"><i className="bi bi-send" style={{fontSize:"30px"}}></i></button>
               </div>
             </form>
           </div>

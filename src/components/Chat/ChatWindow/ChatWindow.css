@@ -1,4 +1,6 @@
 .chat-container {
-    height: 500px;
+    height: auto;
+    min-height: 400px;
+    max-height: 450px;
     overflow-y: scroll;
 }
