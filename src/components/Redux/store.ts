@@ -8,6 +8,7 @@ export const store = configureStore({
     socket  : socketSlice.reducer,
     user : userSlice.reducer 
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck : false}),
 });
 
 export const useAppDispatch:() => typeof store.dispatch = useDispatch

@@ -1,19 +1,15 @@
 import axios from "axios";
-export const verifyToken = async (token: string, username: string, email: string) => {
-    try {
-        let response = await axios.post("http://localhost:3000/auth/verifyToken", {
-            token: token,
-            username: username,
-            email: email
-        }, {
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-            }
-        });
+import {verify} from "jsonwebtoken"; 
 
-        console.log(response.data);
-    } catch (err) {
-        console.log(err);
+export const verifyToken =  (token: string, username: string, email: string) : Boolean => {
+    if(token && username && email){
+        try{
+            const secretKey = username+","+email;
+            let response  =  verify(token,secretKey);
+            return true;
+        }catch(err){
+             console.log(err);
+        }
     }
+    return false;
 }

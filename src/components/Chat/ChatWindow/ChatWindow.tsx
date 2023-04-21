@@ -2,19 +2,30 @@ import "./ChatWindow.css";
 import { SocketIO } from "../../socket-io/socket-io";
 import { Socket } from "socket.io-client";
 import { store } from "../../Redux/store";
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setConnection } from "../../Redux/ClientRedux";
+
+interface currentUser{ 
+  selected : Boolean;
+  fromUsername: string;
+  toUsername: string;
+  messageContent: string;
+}
 
 interface User {
   username: string;
   email: string;
   token: string;
   socketId: string;
+  currentUserSelection : currentUser;
 }
 
 export const ChatWindow = () => {
   let initialState: Map<String , User> = new Map();
+
+  const [currMessage , setCurrMessgae] = useState("");
+  const [toUsername , setToUsername ] = useState("");
   const dispatching = useDispatch();
 
   const checkUser = (u1: { username: string, email: string }, u2: { username: string, email: string }): Boolean => {
@@ -29,9 +40,9 @@ export const ChatWindow = () => {
     switch (action.type) {
       case "addUser":
         if (state && state.size > 0) {
-          if(!state.get(action.payload.socketId)){
+          if(!state.get(action.payload.username)){
             let newMap =  new Map(state);
-            newMap.set(action.payload.socketId , action.payload);
+            newMap.set(action.payload.username , action.payload);
             state = newMap;
             return state;
           }else{
@@ -39,11 +50,12 @@ export const ChatWindow = () => {
           }
         }else{
           let newMap =  new Map(state);
-          newMap.set(action.payload.socketId , action.payload);
+          newMap.set(action.payload.username , action.payload);
           state = newMap;
           return state;
         }
-
+      case "setCurrentUser":
+        return state;
       default:
         return state;
     }
@@ -53,7 +65,7 @@ export const ChatWindow = () => {
 
   useEffect(() => {
     handlejoinSocket();
-  }, []);
+  }, [state]);
   const handlejoinSocket = async () => {
     if(store.getState().user && store.getState().user.token && store.getState().user.email && store.getState().user.username
     ){
@@ -61,7 +73,6 @@ export const ChatWindow = () => {
       dispatching(setConnection(response));
       response.emit("new-join", store.getState().user);
       getListUsersConnected(response);
-      console.log(state);
       return () => {
         response.disconnect();
       }
@@ -71,7 +82,7 @@ export const ChatWindow = () => {
   
   const getListUsersConnected = (io: Socket)=> {
     io.on("update", function (userList: User[]) {
-        if(userList && userList.length > 0 && store.getState().user){
+      if(userList && userList.length > 0 && store.getState().user){
           userList.map((user)=>{
               if(checkUser(user, store.getState().user)){
                 dispatch({ type: "addUser", payload: user });
@@ -81,10 +92,31 @@ export const ChatWindow = () => {
       });
   }
 
-  const handleChatClick = () =>{
-    console.log("here");
+  
+  const handleChatClick = (username : string) =>{
+    if(username){
+      setToUsername(username);
+    }
   }
 
+  const handleSendButton = (e : any) =>{
+    e.preventDefault();
+    console.log(currMessage);
+    console.log(toUsername);
+    if(store.getState().socket && store.getState().socket.io && currMessage && store.getState().user.username && toUsername){
+        let socket  = store.getState().socket.io;
+        console.log(store.getState().socket.io);
+        socket.emit("private-message" , {
+          fromUsername: store.getState().user.username,
+          toUsername : toUsername ,
+          messageContent: currMessage
+        });
+
+        socket.on("private-chat" , (message : any) =>{
+          console.log(message);
+        })
+    }
+}
   
   return (
     <div className="container py-4">
@@ -97,7 +129,7 @@ export const ChatWindow = () => {
             <div className="card-body">
               <ul className="list-group">
                 {Array.from(state.values()).map((user : User) => {
-                  return <li className="list-group-item" onClick={handleChatClick}>{user.username}</li>
+                  return <li className="list-group-item" onClick={() => handleChatClick(user.username)}>{user.username}</li>
                 })}
                 {/* <li className="list-group-item">John Doe {state.length}</li>
                 <li className="list-group-item">Jane Doe</li>
@@ -113,7 +145,7 @@ export const ChatWindow = () => {
               <h4>Chat with John Doe</h4>
             </div>
             <div className="card-body chat-container">
-              <div className="mb-3">
+              {/* <div className="mb-3">
                 <div className="d-flex justify-content-end">
                   <div className="bg-primary text-white p-2 rounded">
                     <p>Hello, how can I help you?</p>
@@ -126,14 +158,23 @@ export const ChatWindow = () => {
                     <p>Hi, I have a question about your product.</p>
                   </div>
                 </div>
+              </div> */}
+
+              <div className="mb-3">
+                <div className="d-flex justify-content-center">
+                  <div className="text-black p-2 rounded">
+                    <p>Let's begin Your Chat!</p>
+                  </div>
+                </div>
               </div>
-              {/* <!-- Add more messages here --> */}
+              
             </div>
             <div className="card-footer">
               <form>
                 <div className="input-group">
-                  <input type="text" className="form-control" placeholder="Type your message..." />
-                  <button type="submit" className="btn btn-primary"><i className="bi bi-arrow-up" style={{ fontSize: "30px" }}></i></button>
+                  <input type="text" className="form-control" placeholder="Type your message..." onChange = {(e) => setCurrMessgae(e.target.value) }/>
+                  <button className="btn btn-primary"><i className="bi bi-arrow-up" style={{ fontSize: "30px" }}
+                  onClick = {(e) => handleSendButton(e)}></i></button>
                 </div>
               </form>
             </div>
