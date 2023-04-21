@@ -5,6 +5,7 @@ import http from "http";
 import cors from "cors";
 import router from './Controller/SocketController';
 import { User } from './UserModel/UserModel';
+import { verifyToken } from './Controller/ServiceMethods';
 const app = express();
 let userList :User[] = [];
 app.use(bodyParser.json(), cors());
@@ -23,7 +24,8 @@ io.listen(4000);
 
 if(!io.listenerCount('connection')){
     io.on("connection" , (socket)=>{
-        
+        let authObject : User = socket.handshake.auth as User;
+        verifyToken(authObject.token , authObject.username , authObject.email);
         socket.on("new-join" , (userInfo : User)=>{
             let found : Boolean = false;
             if(userList && userList.length > 0 ){

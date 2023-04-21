@@ -55,16 +55,16 @@ export const ChatWindow = () => {
     handlejoinSocket();
   }, []);
   const handlejoinSocket = async () => {
-    if(store.getState().user && store.getState().user.token){
-        
-    }
-    let response: any = new SocketIO().init();
-    dispatching(setConnection(response));
-    response.emit("new-join", store.getState().user);
-    getListUsersConnected(response);
-    console.log(state);
-    return () => {
-      response.disconnect();
+    if(store.getState().user && store.getState().user.token && store.getState().user.email && store.getState().user.username
+    ){
+      let response: any = new SocketIO().init(store.getState().user.token , store.getState().user.username , store.getState().user.email);
+      dispatching(setConnection(response));
+      response.emit("new-join", store.getState().user);
+      getListUsersConnected(response);
+      console.log(state);
+      return () => {
+        response.disconnect();
+      }
     }
   }
 
