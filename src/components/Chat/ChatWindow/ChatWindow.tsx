@@ -5,21 +5,9 @@ import { store } from "../../Redux/store";
 import { useEffect, useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setConnection } from "../../Redux/ClientRedux";
-
-interface currentUser {
-  selected: Boolean;
-  fromUsername: string;
-  toUsername: string;
-  messageContent: string;
-}
-
-interface User {
-  username: string;
-  email: string;
-  token: string;
-  socketId: string;
-  currentUserSelection: currentUser;
-}
+import { ChatUser, User } from "../../Model and Interfaces/Models";
+import { getChats } from "./commonMethods";
+import { addChats } from "../../Redux/ChatsRedux";
 
 export const ChatWindow = () => {
   let initialState: Map<String, User> = new Map();
@@ -64,6 +52,12 @@ export const ChatWindow = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
+    if(store.getState().user && store.getState().user.username){
+      getChats(store.getState().user.username).then((res: ChatUser[])=>{
+        dispatching(addChats(res));   
+      });
+    }
+    
     handlejoinSocket();
   }, [state]);
   const handlejoinSocket = async () => {

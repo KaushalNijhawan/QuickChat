@@ -10,16 +10,6 @@ import { store } from './components/Redux/store';
 import { useDispatch } from "react-redux";
 
 function App() {
-  const dispatch = useDispatch();
-  // const checkToken = (): boolean => {
-  //   console.log(store.getState().user);
-  //   if (store && store.getState() && store.getState().user && store.getState().user.token) {
-  //     return false;
-  //   } else {
-  //     return true;
-  //   }
-  // }
-
   return (
     <BrowserRouter>
       <Routes>

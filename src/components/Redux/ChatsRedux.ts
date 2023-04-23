@@ -1,10 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-interface ChatUser{
-    fromUsername: string;
-    toUsername : string;
-    messageContent : string;
-}
+import { ChatUser } from "../Model and Interfaces/Models";
 
 let initialState : ChatUser[] = [];
 
@@ -13,9 +8,11 @@ export const chatSlice = createSlice({
     name :"chats",
     initialState,
     reducers : {
-        addChats: (state , action : {payload : ChatUser} )=>{
+        addChats: (state , action : {payload : ChatUser[]} )=>{
+            console.log(action);
             if(action && action.payload){
-                return [...state , action.payload];
+                state = action.payload;
+                return state;
             }
             return state;
         }
