@@ -6,8 +6,8 @@ import { useEffect, useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setConnection } from "../../Redux/ClientRedux";
 
-interface currentUser{ 
-  selected : Boolean;
+interface currentUser {
+  selected: Boolean;
   fromUsername: string;
   toUsername: string;
   messageContent: string;
@@ -18,14 +18,14 @@ interface User {
   email: string;
   token: string;
   socketId: string;
-  currentUserSelection : currentUser;
+  currentUserSelection: currentUser;
 }
 
 export const ChatWindow = () => {
-  let initialState: Map<String , User> = new Map();
+  let initialState: Map<String, User> = new Map();
 
-  const [currMessage , setCurrMessgae] = useState("");
-  const [toUsername , setToUsername ] = useState("");
+  const [currMessage, setCurrMessgae] = useState("");
+  const [toUsername, setToUsername] = useState("");
   const dispatching = useDispatch();
 
   const checkUser = (u1: { username: string, email: string }, u2: { username: string, email: string }): Boolean => {
@@ -36,21 +36,21 @@ export const ChatWindow = () => {
     }
   }
 
-  const reducer = (state: Map<String , User>, action: { type: string, payload: User }): Map<String , User> => {
+  const reducer = (state: Map<String, User>, action: { type: string, payload: User }): Map<String, User> => {
     switch (action.type) {
       case "addUser":
         if (state && state.size > 0) {
-          if(!state.get(action.payload.username)){
-            let newMap =  new Map(state);
-            newMap.set(action.payload.username , action.payload);
+          if (!state.get(action.payload.username)) {
+            let newMap = new Map(state);
+            newMap.set(action.payload.username, action.payload);
             state = newMap;
             return state;
-          }else{
+          } else {
             return state;
           }
-        }else{
-          let newMap =  new Map(state);
-          newMap.set(action.payload.username , action.payload);
+        } else {
+          let newMap = new Map(state);
+          newMap.set(action.payload.username, action.payload);
           state = newMap;
           return state;
         }
@@ -67,9 +67,9 @@ export const ChatWindow = () => {
     handlejoinSocket();
   }, [state]);
   const handlejoinSocket = async () => {
-    if(store.getState().user && store.getState().user.token && store.getState().user.email && store.getState().user.username
-    ){
-      let response: any = new SocketIO().init(store.getState().user.token , store.getState().user.username , store.getState().user.email);
+    if (store.getState().user && store.getState().user.token && store.getState().user.email && store.getState().user.username
+    ) {
+      let response: any = new SocketIO().init(store.getState().user.token, store.getState().user.username, store.getState().user.email);
       dispatching(setConnection(response));
       response.emit("new-join", store.getState().user);
       getListUsersConnected(response);
@@ -79,45 +79,45 @@ export const ChatWindow = () => {
     }
   }
 
-  
-  const getListUsersConnected = (io: Socket)=> {
+
+  const getListUsersConnected = (io: Socket) => {
     io.on("update", function (userList: User[]) {
-      if(userList && userList.length > 0 && store.getState().user){
-          userList.map((user)=>{
-              if(checkUser(user, store.getState().user)){
-                dispatch({ type: "addUser", payload: user });
-              }
-          });
-        }
-      });
+      if (userList && userList.length > 0 && store.getState().user) {
+        userList.map((user) => {
+          if (checkUser(user, store.getState().user)) {
+            dispatch({ type: "addUser", payload: user });
+          }
+        });
+      }
+    });
   }
 
-  
-  const handleChatClick = (username : string) =>{
-    if(username){
+
+  const handleChatClick = (username: string) => {
+    if (username) {
       setToUsername(username);
     }
   }
 
-  const handleSendButton = (e : any) =>{
+  const handleSendButton = (e: any) => {
     e.preventDefault();
     console.log(currMessage);
     console.log(toUsername);
-    if(store.getState().socket && store.getState().socket.io && currMessage && store.getState().user.username && toUsername){
-        let socket  = store.getState().socket.io;
-        console.log(store.getState().socket.io);
-        socket.emit("private-message" , {
-          fromUsername: store.getState().user.username,
-          toUsername : toUsername ,
-          messageContent: currMessage
-        });
+    if (store.getState().socket && store.getState().socket.io && currMessage && store.getState().user.username && toUsername) {
+      let socket = store.getState().socket.io;
+      console.log(store.getState().socket.io);
+      socket.emit("private-message", {
+        fromUsername: store.getState().user.username,
+        toUsername: toUsername,
+        messageContent: currMessage
+      });
 
-        socket.on("private-chat" , (message : any) =>{
-          console.log(message);
-        })
+      socket.on("private-chat", (message: any) => {
+        console.log(message);
+      })
     }
-}
-  
+  }
+
   return (
     <div className="container py-4">
       <div className="row">
@@ -128,8 +128,8 @@ export const ChatWindow = () => {
             </div>
             <div className="card-body">
               <ul className="list-group">
-                {Array.from(state.values()).map((user : User) => {
-                  return <li className="list-group-item" onClick={() => handleChatClick(user.username)}>{user.username}</li>
+                {Array.from(state.values()).map((user: User) => {
+                  return <li className="btn btn-outline-secondary" onClick={() => handleChatClick(user.username)}>{user.username}</li>
                 })}
                 {/* <li className="list-group-item">John Doe {state.length}</li>
                 <li className="list-group-item">Jane Doe</li>
@@ -142,7 +142,7 @@ export const ChatWindow = () => {
         <div className="col-md-8">
           <div className="card">
             <div className="card-header">
-              <h4>Chat with John Doe</h4>
+              {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
             </div>
             <div className="card-body chat-container">
               {/* <div className="mb-3">
@@ -159,22 +159,21 @@ export const ChatWindow = () => {
                   </div>
                 </div>
               </div> */}
-
-              <div className="mb-3">
+              {toUsername && currMessage ? null : <div className="mb-3">
                 <div className="d-flex justify-content-center">
                   <div className="text-black p-2 rounded">
                     <p>Let's begin Your Chat!</p>
                   </div>
                 </div>
-              </div>
-              
+              </div>}
+
             </div>
             <div className="card-footer">
               <form>
                 <div className="input-group">
-                  <input type="text" className="form-control" placeholder="Type your message..." onChange = {(e) => setCurrMessgae(e.target.value) }/>
+                  <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} />
                   <button className="btn btn-primary"><i className="bi bi-arrow-up" style={{ fontSize: "30px" }}
-                  onClick = {(e) => handleSendButton(e)}></i></button>
+                    onClick={(e) => handleSendButton(e)}></i></button>
                 </div>
               </form>
             </div>

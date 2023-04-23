@@ -1,25 +1,41 @@
 import {Datastore} from "@google-cloud/datastore";
+import { ChatUser } from "../UserModel/UserModel";
 
-const datastore = new Datastore({
-    projectId: "upbeat-glow-381318",
-    keyFilename:"C:/Practice Project/ATSE-2/quick-chat-server/credentials/upbeat-glow.json"
+let datastore = new Datastore({
+    projectId: "superb-cycle-384321",
+    keyFilename:"C:/Users/Kaushal Nijhawan/Downloads/superb-cycle.json"
 });
 
-export const addUser = async({username , password , email}:{username: string , password : string, email : string})=>{
-     const taskKey = datastore.key({path : ["User"] ,  namespace : "ChatUser"});
-    if(username && password && email ){
-        const task = {
-            key : taskKey, 
-            data:{
-                username : username ,
-                password: password,
-                email : email
-            }
+export const addChats = async (chatUser: ChatUser) =>{
+    if(chatUser.fromUsername && chatUser.toUsername && chatUser.messageContent){
+        const childKey = datastore.key({
+            path:["User" , chatUser.fromUsername.toLowerCase() , "Chat" , chatUser.toUsername]
+        });
+        const parentKey = datastore.key({
+            path: ["User" , chatUser.fromUsername.toLowerCase()]
+        })
+        const childEntity = {
+            key : childKey,
+            data:chatUser,
+            parent: parentKey
+        };
+        try{
+            await datastore.save(childEntity);
+            return "saved";
+        }catch(err){
+            console.log(err);
         }
-       let response  = await datastore.save(task);
-       return response;
     }
+}  
 
+
+export const getChats = async (fromUsername : string) : Promise<any>=>{
+    if(fromUsername){
+        const query = datastore.createQuery("Chat").filter("fromUsername" , "=" , fromUsername);
+        let response = await datastore.runQuery(query);
+        console.log(response);
+        return response;
+    }
     return null;
-  }
+}
 

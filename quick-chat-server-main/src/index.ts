@@ -6,6 +6,7 @@ import cors from "cors";
 import router from './Controller/SocketController';
 import { ChatUser, User } from './UserModel/UserModel';
 import { verifyToken } from './Controller/ServiceMethods';
+import { addChats } from './Datastore/datastore';
 const app = express();
 let userList: User[] = [];
 app.use(bodyParser.json(), cors());
@@ -26,7 +27,6 @@ if (!io.listenerCount('connection')) {
     io.on("connection", (socket) => {
         let authObject: User = socket.handshake.auth as User;
         let response = verifyToken(authObject.token, authObject.username, authObject.email);
-        console.log(response);
         if (response) {
             socket.on("new-join", (userInfo: User) => {
                 let found: Boolean = false;
@@ -50,9 +50,12 @@ if (!io.listenerCount('connection')) {
                 }
             });
             //  making the content for the private message;
-            socket.on("private-message" , (responseObject) =>{
+            socket.on("private-message" , (responseObject : ChatUser) =>{
                 console.log(responseObject);
                 socket.join(responseObject.fromUsername + "-"+ responseObject.toUsername);
+                addChats(responseObject).then((res : any)=>{
+                    console.log(res);
+                });
                 io.to(responseObject.fromUsername + "-"+ responseObject.toUsername).emit( "private-chat",responseObject.messageContent); 
             });
 
