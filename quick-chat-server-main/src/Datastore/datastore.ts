@@ -1,5 +1,6 @@
 import {Datastore} from "@google-cloud/datastore";
 import { ChatUser } from "../UserModel/UserModel";
+import { UUID, randomUUID } from "crypto";
 
 let datastore = new Datastore({
     projectId: "superb-cycle-384321",
@@ -9,7 +10,7 @@ let datastore = new Datastore({
 export const addChats = async (chatUser: ChatUser) =>{
     if(chatUser.fromUsername && chatUser.toUsername && chatUser.messageContent){
         const childKey = datastore.key({
-            path:["User" , chatUser.fromUsername.toLowerCase() , "Chat" , chatUser.toUsername]
+            path:["User" , chatUser.fromUsername.toLowerCase() , "Chat" , randomUUID().toString()]
         });
         const parentKey = datastore.key({
             path: ["User" , chatUser.fromUsername.toLowerCase()]
@@ -32,9 +33,21 @@ export const addChats = async (chatUser: ChatUser) =>{
 export const getChats = async (fromUsername : string) : Promise<any>=>{
     if(fromUsername){
         const query = datastore.createQuery("Chat").filter("fromUsername" , "=" , fromUsername);
-        let response = await datastore.runQuery(query);
-        console.log(response);
-        return response;
+        let [response]  = await datastore.runQuery(query);
+        if(response && response.length > 0 ){
+            let chatList : ChatUser[] = [];
+            response.map((res)=>{
+                if(res && res.fromUsername && res.toUsername && res.messageContent){
+                    chatList.push({
+                        fromUsername : res.fromUsername,
+                        toUsername : res.toUsername,
+                        messageContent : res.messageContent
+                    });
+                }
+            });
+
+            return chatList;
+        }
     }
     return null;
 }

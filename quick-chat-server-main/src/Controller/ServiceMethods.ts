@@ -1,4 +1,3 @@
-import axios from "axios";
 import {verify} from "jsonwebtoken"; 
 
 export const verifyToken =  (token: string, username: string, email: string) : Boolean => {
