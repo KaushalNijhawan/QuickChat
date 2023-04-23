@@ -42,7 +42,7 @@ export const getChats = async (fromUsername : string) : Promise<any>=>{
                         fromUsername : res.fromUsername,
                         toUsername : res.toUsername,
                         messageContent : res.messageContent,
-                        timestamp : res.timetamp
+                        timestamp : res.timeStamp
                     });
                 }
             });
