@@ -9,4 +9,5 @@ export interface ChatUser{
     fromUsername : string;
     toUsername: string;
     messageContent : string; 
+    timestamp: number;
 }

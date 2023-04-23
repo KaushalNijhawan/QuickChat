@@ -56,7 +56,7 @@ if (!io.listenerCount('connection')) {
                 addChats(responseObject).then((res : any)=>{
                     console.log(res);
                 });
-                io.to(responseObject.fromUsername + "-"+ responseObject.toUsername).emit( "private-chat",responseObject.messageContent); 
+                io.to(responseObject.fromUsername + "-"+ responseObject.toUsername).emit("private-chat",responseObject.messageContent); 
             });
 
         } else {

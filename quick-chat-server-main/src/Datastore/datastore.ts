@@ -41,7 +41,8 @@ export const getChats = async (fromUsername : string) : Promise<any>=>{
                     chatList.push({
                         fromUsername : res.fromUsername,
                         toUsername : res.toUsername,
-                        messageContent : res.messageContent
+                        messageContent : res.messageContent,
+                        timestamp : res.timetamp
                     });
                 }
             });

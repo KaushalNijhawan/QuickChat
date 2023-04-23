@@ -15,7 +15,7 @@ export const ChatWindow = () => {
   const [currMessage, setCurrMessgae] = useState("");
   const [toUsername, setToUsername] = useState("");
   const dispatching = useDispatch();
-
+  
   const checkUser = (u1: { username: string, email: string }, u2: { username: string, email: string }): Boolean => {
     if (u1.username == u2.username || u1.email == u2.email) {
       return false;
@@ -87,7 +87,7 @@ export const ChatWindow = () => {
   }
 
 
-  const handleChatClick = (username: string) => {
+  const handleChatClick = (e : React.MouseEvent , username: string) => {
     if (username) {
       setToUsername(username);
     }
@@ -95,15 +95,14 @@ export const ChatWindow = () => {
 
   const handleSendButton = (e: any) => {
     e.preventDefault();
-    console.log(currMessage);
-    console.log(toUsername);
     if (store.getState().socket && store.getState().socket.io && currMessage && store.getState().user.username && toUsername) {
       let socket = store.getState().socket.io;
       console.log(store.getState().socket.io);
       socket.emit("private-message", {
         fromUsername: store.getState().user.username,
         toUsername: toUsername,
-        messageContent: currMessage
+        messageContent: currMessage,
+        timeStamp : new Date().valueOf()
       });
 
       socket.on("private-chat", (message: any) => {
@@ -123,7 +122,7 @@ export const ChatWindow = () => {
             <div className="card-body">
               <ul className="list-group">
                 {Array.from(state.values()).map((user: User) => {
-                  return <li className="btn btn-outline-secondary" onClick={() => handleChatClick(user.username)}>{user.username}</li>
+                  return <li className="btn btn-outline-secondary" onClick={(e) => handleChatClick(e,user.username)}>{user.username}</li>
                 })}
                 {/* <li className="list-group-item">John Doe {state.length}</li>
                 <li className="list-group-item">Jane Doe</li>
@@ -134,7 +133,7 @@ export const ChatWindow = () => {
           </div>
         </div>
         <div className="col-md-8">
-          <div className="card">
+          <div className={toUsername ? "card" : "card opacity-50"}>
             <div className="card-header">
               {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
             </div>
