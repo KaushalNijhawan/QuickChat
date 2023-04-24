@@ -3,6 +3,7 @@ export interface ChatUser{
     toUsername: string;
     messageContent: string;
     timestamp: number;
+    Id: number;
 }
 
 export interface currentUser {

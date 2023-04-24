@@ -9,17 +9,36 @@ export const chatSlice = createSlice({
     initialState,
     reducers : {
         addChats: (state , action : {payload : ChatUser[]} )=>{
-            console.log(action);
             if(action && action.payload){
                 state = action.payload;
                 state.sort((a, b) => a.timestamp - b.timestamp);
                 return state;
             }
             return state;
+        },
+        appendChat : (state , action: {payload: ChatUser})=>{
+            if(action && action.payload && action.payload.messageContent.length > 0){
+                let found : Boolean = false;
+                if(state){
+                    for(let i = 0;i<state.length ;i++){
+                        if(state[i].Id == action.payload.Id){
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if(!found){
+                    state = [...state , action.payload];
+                    state.sort((a, b) => a.timestamp - b.timestamp);
+                    return state;
+                }
+            }
+
+            return state;
         }
     }
 });
 
-export const {addChats} = chatSlice.actions;
+export const {addChats,  appendChat} = chatSlice.actions;
 
 export default chatSlice.reducer;

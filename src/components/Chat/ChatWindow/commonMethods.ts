@@ -19,3 +19,30 @@ export const getChats = async () : Promise<ChatUser[]>=>{
     }
     return [];
 }
+
+export const provideClassPlacement = (chatObj : ChatUser , toUsername : string): string =>{
+    if(chatObj  && toUsername && store.getState().user.username){
+        if(chatObj.fromUsername === store.getState().user.username && toUsername == chatObj.toUsername){
+            return "d-flex justify-content-end";
+        }else if(chatObj.fromUsername === toUsername && store.getState().user.username == chatObj.toUsername){
+            return "d-flex justify-content-start";
+        }else{
+            return "";
+        }
+    }
+
+    return "";
+}   
+
+export const provideTextHighlight = (chatObj : ChatUser , toUsername : string): string =>{
+    if(chatObj  && toUsername && store.getState().user.username){
+        if(chatObj.fromUsername === store.getState().user.username && toUsername == chatObj.toUsername){
+            return "bg-secondary text-white p-2 rounded";
+        }else if(chatObj.fromUsername === toUsername && store.getState().user.username == chatObj.toUsername){
+            return "bg-primary text-white p-2 rounded";
+        }else{
+            return "";
+        }
+    }
+    return "";
+}

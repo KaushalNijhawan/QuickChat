@@ -51,12 +51,14 @@ if (!io.listenerCount('connection')) {
             });
             //  making the content for the private message;
             socket.on("private-message" , (responseObject : ChatUser) =>{
-                console.log(responseObject);
-                socket.join(responseObject.fromUsername + "-"+ responseObject.toUsername);
-                addChats(responseObject).then((res : any)=>{
-                    console.log(res);
-                });
-                io.to(responseObject.fromUsername + "-"+ responseObject.toUsername).emit("private-chat",responseObject.messageContent); 
+                socket.join("private-chat-room");
+                if(responseObject.messageContent.length > 0 ){
+                    addChats(responseObject).then((res : any)=>{
+                        console.log(res);
+                        
+                    });
+                }
+                io.to("private-chat-room").emit("private-chat" , responseObject);
             });
 
         } else {

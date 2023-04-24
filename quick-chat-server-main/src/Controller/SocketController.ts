@@ -6,8 +6,7 @@ const router = express.Router();
 router.get("/chats" , async(req, res)=>{
     let response : any = null;
     try{
-        const token = req.headers['auuthorization'];
-        console.log(token);
+        const token = req.headers['authorization'];
         response = await getChats();
     }catch(err){
         console.log(err);

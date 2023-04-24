@@ -24,7 +24,6 @@ export const addChats = async (chatUser: ChatUser) =>{
             await datastore.save(childEntity);
             return "saved";
         }catch(err){
-            console.log(err);
         }
     }
 }  
@@ -41,7 +40,8 @@ export const getChats = async () : Promise<any>=>{
                         fromUsername : res.fromUsername,
                         toUsername : res.toUsername,
                         messageContent : res.messageContent,
-                        timestamp : res.timeStamp
+                        timestamp : res.timeStamp,
+                        Id: res.Id
                     });
                 }
             });

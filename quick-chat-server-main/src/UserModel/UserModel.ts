@@ -10,4 +10,5 @@ export interface ChatUser{
     toUsername: string;
     messageContent : string; 
     timestamp: number;
+    Id: number;
 }

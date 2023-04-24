@@ -6,16 +6,16 @@ import { useEffect, useReducer, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setConnection } from "../../Redux/ClientRedux";
 import { ChatUser, User } from "../../Model and Interfaces/Models";
-import { getChats } from "./commonMethods";
-import { addChats } from "../../Redux/ChatsRedux";
+import { getChats, provideClassPlacement, provideTextHighlight } from "./commonMethods";
+import { addChats, appendChat } from "../../Redux/ChatsRedux";
 
 export const ChatWindow = () => {
   let initialState: Map<String, User> = new Map();
-
+   const [chats, setChats] = useState<ChatUser>();
   const [currMessage, setCurrMessgae] = useState("");
   const [toUsername, setToUsername] = useState("");
   const dispatching = useDispatch();
-  
+
   const checkUser = (u1: { username: string, email: string }, u2: { username: string, email: string }): Boolean => {
     if (u1.username == u2.username || u1.email == u2.email) {
       return false;
@@ -51,16 +51,22 @@ export const ChatWindow = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const getChat = () => {
+    getChats().then((res: ChatUser[]) => {
+      dispatching(addChats(res));
+    });
+  }
+
   useEffect(() => {
-    if(store.getState().user && store.getState().user.username){
-      getChats().then((res: ChatUser[])=>{
-        dispatching(addChats(res));   
-      });
-    }
-    
     handlejoinSocket();
-    console.log(store.getState().chat);
-  }, [state]);
+  }, [state, store.getState().chat]);
+
+  useEffect(() => {
+    getChat();
+    let socket = store.getState().socket.io;
+    handlePrivateChat("" , "" , socket);
+  }, []);
+
   const handlejoinSocket = async () => {
     if (store.getState().user && store.getState().user.token && store.getState().user.email && store.getState().user.username
     ) {
@@ -87,30 +93,33 @@ export const ChatWindow = () => {
     });
   }
 
-
-  const handleChatClick = (e : React.MouseEvent , username: string) => {
+  const handleChatClick = (e: React.MouseEvent, username: string) => {
     if (username) {
       setToUsername(username);
     }
   }
 
   const handleSendButton = (e: any) => {
-    e.preventDefault();
-    if (store.getState().socket && store.getState().socket.io && currMessage && store.getState().user.username && toUsername) {
-      let socket = store.getState().socket.io;
-      console.log(store.getState().socket.io);
-      socket.emit("private-message", {
-        fromUsername: store.getState().user.username,
-        toUsername: toUsername,
-        messageContent: currMessage,
-        timeStamp : new Date().valueOf()
-      });
-
-      socket.on("private-chat", (message: any) => {
-        console.log(message);
-      })
-    }
+    e?.preventDefault();
+    let socket: Socket = store.getState().socket.io;
+    handlePrivateChat(toUsername , currMessage , socket);
   }
+
+  const handlePrivateChat = (toUsername: string , messageContent : string , socket : Socket) =>{
+    socket.emit("private-message", {
+      fromUsername: store.getState().user.username,
+      toUsername: toUsername,
+      messageContent: currMessage,
+      timeStamp: new Date().valueOf(),
+      Id: store.getState().chat.length + 1
+    });
+    socket.on("private-chat", (message: ChatUser) => {
+      dispatching(appendChat(message));
+       setChats(message);
+      console.log(message);
+    });
+  }
+
 
   return (
     <div className="container py-4">
@@ -122,13 +131,9 @@ export const ChatWindow = () => {
             </div>
             <div className="card-body">
               <ul className="list-group">
-                {Array.from(state.values()).map((user: User) => {
-                  return <li className="btn btn-outline-secondary" onClick={(e) => handleChatClick(e,user.username)}>{user.username}</li>
+                {Array.from(state.values()).map((user: User, index: number) => {
+                  return <li className="btn btn-outline-secondary" key={index} onClick={(e) => handleChatClick(e, user.username)}>{user.username}</li>
                 })}
-                {/* <li className="list-group-item">John Doe {state.length}</li>
-                <li className="list-group-item">Jane Doe</li>
-                <li className="list-group-item">Bob Smith</li> */}
-                {/* <!-- Add more contacts here --> */}
               </ul>
             </div>
           </div>
@@ -139,21 +144,17 @@ export const ChatWindow = () => {
               {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
             </div>
             <div className="card-body chat-container">
-              {/* <div className="mb-3">
-                <div className="d-flex justify-content-end">
-                  <div className="bg-primary text-white p-2 rounded">
-                    <p>Hello, how can I help you?</p>
+              {toUsername ? store.getState().chat.map((chatObj: ChatUser, index: number) => {
+                return (
+                  <div className="mb-3" key={index}>
+                    <div className={provideClassPlacement(chatObj, toUsername)}>
+                      <div className={provideTextHighlight(chatObj, toUsername)}>
+                        <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="mb-3">
-                <div className="d-flex justify-content-start">
-                  <div className="bg-secondary text-white p-2 rounded">
-                    <p>Hi, I have a question about your product.</p>
-                  </div>
-                </div>
-              </div> */}
-              {toUsername && currMessage ? null : <div className="mb-3">
+                )
+              }) : <div className="mb-3">
                 <div className="d-flex justify-content-center">
                   <div className="text-black p-2 rounded">
                     <p>Let's begin Your Chat!</p>
@@ -166,8 +167,7 @@ export const ChatWindow = () => {
               <form>
                 <div className="input-group">
                   <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} />
-                  <button className="btn btn-primary"><i className="bi bi-arrow-up" style={{ fontSize: "30px" }}
-                    onClick={(e) => handleSendButton(e)}></i></button>
+                  <button className="btn btn-primary" onClick={(e) => handleSendButton(e)}><i className="bi bi-arrow-up" style={{ fontSize: "30px" }}></i></button>
                 </div>
               </form>
             </div>
