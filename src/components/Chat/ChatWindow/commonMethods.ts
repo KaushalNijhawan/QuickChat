@@ -1,12 +1,10 @@
 import axios from "axios"
 import { ChatUser } from "../../Model and Interfaces/Models";
 import { store } from "../../Redux/store";
-export const getChats = async (fromUsername : string) : Promise<ChatUser[]>=>{
-    if(fromUsername && store && store.getState() && store.getState().user.token){
+export const getChats = async () : Promise<ChatUser[]>=>{
+    if(store && store.getState() && store.getState().user.token){
         try{
-           let response =  await axios.post("http://localhost:3001/token/chats" , {
-                fromUsername : fromUsername
-            },{
+           let response =  await axios.get("http://localhost:3001/token/chats" , {
                 headers:{
                     Accept : "application/json",
                     "Content-Type":"application/json",

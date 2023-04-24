@@ -53,12 +53,13 @@ export const ChatWindow = () => {
 
   useEffect(() => {
     if(store.getState().user && store.getState().user.username){
-      getChats(store.getState().user.username).then((res: ChatUser[])=>{
+      getChats().then((res: ChatUser[])=>{
         dispatching(addChats(res));   
       });
     }
     
     handlejoinSocket();
+    console.log(store.getState().chat);
   }, [state]);
   const handlejoinSocket = async () => {
     if (store.getState().user && store.getState().user.token && store.getState().user.email && store.getState().user.username

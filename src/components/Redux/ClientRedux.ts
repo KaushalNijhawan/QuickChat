@@ -12,7 +12,6 @@ export const socketSlice = createSlice({
     initialState,
     reducers: {
          setConnection: (state ,  action : {payload: Socket}) =>{
-            console.log(action);
             if(action && action.payload ){
                 state.io = action.payload;
             }

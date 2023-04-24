@@ -12,6 +12,7 @@ export const chatSlice = createSlice({
             console.log(action);
             if(action && action.payload){
                 state = action.payload;
+                state.sort((a, b) => a.timestamp - b.timestamp);
                 return state;
             }
             return state;

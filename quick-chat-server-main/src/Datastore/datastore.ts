@@ -30,9 +30,8 @@ export const addChats = async (chatUser: ChatUser) =>{
 }  
 
 
-export const getChats = async (fromUsername : string) : Promise<any>=>{
-    if(fromUsername){
-        const query = datastore.createQuery("Chat").filter("fromUsername" , "=" , fromUsername);
+export const getChats = async () : Promise<any>=>{
+    const query = datastore.createQuery("Chat");
         let [response]  = await datastore.runQuery(query);
         if(response && response.length > 0 ){
             let chatList : ChatUser[] = [];
@@ -49,7 +48,6 @@ export const getChats = async (fromUsername : string) : Promise<any>=>{
 
             return chatList;
         }
-    }
     return null;
 }
 
