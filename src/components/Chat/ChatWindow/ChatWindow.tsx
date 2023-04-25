@@ -11,7 +11,7 @@ import { addChats, appendChat } from "../../Redux/ChatsRedux";
 
 export const ChatWindow = () => {
   let initialState: Map<String, User> = new Map();
-   const [chats, setChats] = useState<ChatUser>();
+  const [chats, setChats] = useState<ChatUser>();
   const [currMessage, setCurrMessgae] = useState("");
   const [toUsername, setToUsername] = useState("");
   const dispatching = useDispatch();
