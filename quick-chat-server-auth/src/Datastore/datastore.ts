@@ -1,31 +1,36 @@
-import {Datastore} from "@google-cloud/datastore";
+import { Datastore } from "@google-cloud/datastore";
 import { User } from "./UserModel/UserModel";
 
 const datastore = new Datastore({
-    projectId: "upbeat-glow-381318",
-    keyFilename:"C:/Practice Project/ATSE-2/quick-chat-server/credentials/upbeat-glow.json"
+  projectId: "upbeat-glow-381318",
+  keyFilename: "/Users/air2017/Downloads/superb-cycle.json",
 });
 
-export const addUser = async({username , password , email}:{username: string , password : string, email : string})=>{
-     const taskKey = datastore.key({path : ["User"] ,  namespace : "ChatUser"});
-    if(username && password && email ){
-        const task = {
-            key : taskKey, 
-            data:{ 
-                username : username ,
-                password: password,
-                email : email
-            }
-        }
-       let response  = await datastore.save(task);
-       console.log(response);
-       return response;
-    }
-
-    return null;
+export const addUser = async ({
+  username,
+  password,
+  email,
+}: {
+  username: string;
+  password: string;
+  email: string;
+}) => {
+  const taskKey = datastore.key({ path: ["User"], namespace: "ChatUser" });
+  if (username && password && email) {
+    const task = {
+      key: taskKey,
+      data: {
+        username: username,
+        password: password,
+        email: email,
+      },
+    };
+    let response = await datastore.save(task);
+    console.log(response);
+    return response;
   }
 
- const checkUser = (user : User) =>{
+  return null;
+};
 
- }
-
+const checkUser = (user: User) => {};
