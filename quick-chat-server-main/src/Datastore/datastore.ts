@@ -50,4 +50,3 @@ export const getChats = async () : Promise<any>=>{
         }
     return null;
 }
-
