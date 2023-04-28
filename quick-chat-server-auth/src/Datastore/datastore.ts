@@ -4,7 +4,7 @@ import { CommitResponse } from "@google-cloud/datastore/build/src/request";
 
 let datastore = new Datastore({
     projectId: "superb-cycle-384321",
-    keyFilename:"C:/Users/Kaushal Nijhawan/Downloads/superb-cycle.json"
+    keyFilename:"C:/Users/hashi/OneDrive/Desktop/HASHIQ UWL MASTERS/SEMESTER 2/ATSE/superb-cycle.json"
 });
 
 export const addUser = async({username , password , email }:{username: string , password : string, email : string})=>{

@@ -20,5 +20,8 @@
     "socket.io": "^4.6.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }
