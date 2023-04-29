@@ -18,8 +18,7 @@ export const socketSlice = createSlice({
             }
          }
     },
-  },
-});
+  });
 
 export const { setConnection } = socketSlice.actions;
 export default socketSlice.reducer;
