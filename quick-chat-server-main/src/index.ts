@@ -4,9 +4,9 @@ import { Server } from "socket.io";
 import http from "http";
 import cors from "cors";
 import router from './Controller/SocketController';
-import { ChatUser, User } from './UserModel/UserModel';
+import { ChatUser, GroupChat, User, groupChatMessage } from './UserModel/UserModel';
 import { verifyToken } from './Controller/ServiceMethods';
-import { addChats } from './Datastore/datastore';
+import { addChats, addGroup, saveGroupChat } from './Datastore/datastore';
 const app = express();
 let userList: User[] = [];
 app.use(bodyParser.json(), cors());
@@ -28,39 +28,32 @@ if (!io.listenerCount('connection')) {
         let authObject: User = socket.handshake.auth as User;
         let response = verifyToken(authObject.token, authObject.username, authObject.email);
         if (response) {
-            socket.on("new-join", (userInfo: User) => {
-                let found: Boolean = false;
-                if (userList && userList.length > 0) {
-                    userList.map((userObj) => {
-                        if (userObj.username == userInfo.username || userInfo.email == userObj.email) {
-                            found = true;
-                        }
-                    });
-                    if (!found) {
-                        userInfo.socketId = socket.id.toString();
-                        userList.push(userInfo);
-                    }
-                } else {
-                    userInfo.socketId = socket.id.toString();
-                    userList.push(userInfo);
-                    found = false;
-                }
-                if (!found) {
-                    io.emit("update", userList);
-                }
-            });
-            //  making the content for the private message;
-            socket.on("private-message" , (responseObject : ChatUser) =>{
+            socket.on("private-message", (responseObject: ChatUser) => {
                 socket.join("private-chat-room");
-                if(responseObject.messageContent.length > 0 ){
-                    addChats(responseObject).then((res : any)=>{
+                if (responseObject.messageContent.length > 0) {
+                    addChats(responseObject).then((res: any) => {
                         console.log(res);
-                        
+
                     });
                 }
-                io.to("private-chat-room").emit("private-chat" , responseObject);
+                io.to("private-chat-room").emit("private-chat", responseObject);
+            });
+            socket.on("group-chat", (groupChatObject: GroupChat) => {
+                addGroup(groupChatObject).then((res) => console.log(res));
             });
 
+            socket.on("join-group", (groupTitle: string) => {
+                socket.join(groupTitle);
+            });
+
+            socket.on("group-message", (groupChatMessage: groupChatMessage) => {
+
+                if (groupChatMessage.messageContent.length > 0) {
+                    // save this message 
+                    saveGroupChat(groupChatMessage).then((res) => { console.log(res) });
+                }
+                io.to(groupChatMessage.groupTitle).emit("group-discussion", groupChatMessage);
+            });
         } else {
             socket.disconnect(true);
         }

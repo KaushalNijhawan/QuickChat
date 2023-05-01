@@ -12,3 +12,17 @@ export interface ChatUser{
     timestamp: number;
     Id: number;
 }
+
+export interface GroupChat{
+    usernames : string[],
+    groupTitle : string
+}
+
+export interface groupChatMessage{
+    groupTitle: string;
+    fromUsername : string;
+    toUsernames: string[];
+    Id: number;
+    timestamp: number;
+    messageContent : string;
+}
