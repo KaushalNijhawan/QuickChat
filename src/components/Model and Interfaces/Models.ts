@@ -19,4 +19,18 @@ export interface User {
     token: string;
     socketId: string;
     currentUserSelection: currentUser;
-  }
+}
+
+export interface GroupChat{
+  usernames : string[],
+  groupTitle : string
+}
+
+export interface GroupChatMessage{
+  groupTitle: string;
+  fromUsername : string;
+  toUsernames: string[];
+  Id: number;
+  timestamp: number;
+  messageContent : string;
+}
