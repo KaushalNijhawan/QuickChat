@@ -141,8 +141,7 @@ export const ChatWindow = () => {
         <div className="col-md-8">
           <div className={toUsername ? "card" : "card opacity-50"}>
             <div className="card-header">
-              {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Welcome to QuickChat Service!
-                 You can start the wonderful Chat Service with a simple Hi!</h4>}
+              {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
             </div>
             <div className="card-body chat-container">
               {toUsername ? store.getState().chat.map((chatObj: ChatUser, index: number) => {
@@ -158,7 +157,7 @@ export const ChatWindow = () => {
               }) : <div className="mb-3">
                 <div className="d-flex justify-content-center">
                   <div className="text-black p-2 rounded">
-                    <p>Let's begin the Chat!</p>
+                    <p>Let's begin Your Chat!</p>
                   </div>
                 </div>
               </div>}
