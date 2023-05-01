@@ -63,3 +63,20 @@ export const addUser = async({username , password , email }:{username: string , 
       return null;
  }
 
+ export const getAllUsers = async (): Promise<{email: string , username: string}[]> =>{
+  const query = datastore.createQuery("ChatUser" , "User");
+  let [response] = await datastore.runQuery(query);
+  if(response && response.length > 0 ){
+    let userList : {email : string , username: string}[] = [];  
+    response.map((res)=>{
+      if(res && res.email && res.username){
+          userList.push({
+            email : res.email,
+            username: res.username
+          })
+      }
+    });
+    return userList;
+  }
+  return [];
+}

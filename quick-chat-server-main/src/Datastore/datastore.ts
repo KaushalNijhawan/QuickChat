@@ -1,6 +1,7 @@
 import {Datastore} from "@google-cloud/datastore";
-import { ChatUser } from "../UserModel/UserModel";
+import { ChatUser, GroupChat, groupChatMessage } from "../UserModel/UserModel";
 import { UUID, randomUUID } from "crypto";
+import { Namespace } from "socket.io";
 
 let datastore = new Datastore({
     projectId: "superb-cycle-384321",
@@ -49,4 +50,91 @@ export const getChats = async () : Promise<any>=>{
             return chatList;
         }
     return null;
+}
+
+export const addGroup = async (groupObj  : GroupChat) : Promise<string>=>{
+    if(groupObj.usernames && groupObj.groupTitle){
+        
+        const key = datastore.key({path : ["Group", randomUUID().toString()] , namespace : "GroupChat"});
+        const task = {
+            key : key, 
+            data: groupObj
+        };
+        try{
+            await datastore.save(task);
+            return "saved";
+        }catch(err){
+            console.log(err);
+        }
+    }
+
+    return "Unsaved";
+}
+
+export const saveGroupChat = async (groupChatMessage : groupChatMessage) =>{
+    if(groupChatMessage && groupChatMessage.fromUsername && groupChatMessage.groupTitle && groupChatMessage){
+        const key = datastore.key({
+            path:["GroupMessage" , randomUUID().toString()], 
+            namespace : "GroupChats"
+        });
+        const childEntity = {
+            key : key,
+            data: groupChatMessage,
+        };
+        try{
+            await datastore.save(childEntity);
+            return "saved";
+        }catch(err){
+            console.log(err);
+        }
+    }
+}
+
+export const getGroups = async () : Promise<GroupChat[]> =>{
+    const query =  datastore.createQuery( "GroupChat", "Group");
+
+    let [response] = await datastore.runQuery(query);
+    if(response && response.length  > 0 ){
+        
+        let groupList : GroupChat[] = [];
+        response.map((res)=>{
+            if(res.usernames && res.groupTitle){
+                groupList.push({
+                    usernames : res.usernames,
+                    groupTitle : res.groupTitle
+                });
+            }
+        });
+        return groupList;
+    }
+
+    return [];
+}
+
+export const getChatsGroupSpecific = async (username : string , groupTitle : string)  : Promise<groupChatMessage[]>=>{
+    if(username && groupTitle){
+        const query = datastore.createQuery("GroupChats" , "GroupMessage").filter("groupTitle" , "=" , groupTitle);
+
+        let [response] = await datastore.runQuery(query);
+        if(response && response.length > 0 ){
+            let groupChatList :  groupChatMessage[] = [];
+
+            response.map((res)=>{
+                if(res && res.toUsernames && res.groupTitle && res.fromUsername && res.timestamp && res.messageContent 
+                    && res.Id){
+                        groupChatList.push({
+                            fromUsername : res.fromUsername ,
+                            toUsernames : res.toUsernames,
+                            timestamp : res.timestamp,
+                            Id : res.Id,
+                            groupTitle : res.groupTitle,
+                            messageContent : res.messageContent
+                        })
+                    }
+            })
+            return groupChatList;
+        }
+    }
+
+    return [];
 }
