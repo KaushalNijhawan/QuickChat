@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Modal } from "react-bootstrap";
 import "./FileMOdal.css";
 import { store } from "../../Redux/store";
-export const FileModal = (props: { showModal: boolean, showModalLoader(showModal: boolean): void }) => {
+import { Socket } from "socket.io-client";
+export const FileModal = (props: { showModal: boolean, showModalLoader(showModal: boolean): void, groupToggle : boolean}) => {
     const [items, setItems] = useState<string[]>(['File', 'Audio', 'Video'])
     const [currentFile, setCurrentFile] = useState<File>();
     const handleClose = () => {
@@ -11,35 +12,53 @@ export const FileModal = (props: { showModal: boolean, showModalLoader(showModal
 
     const handleChangeFile = (e: any, type: string) => {
         let file = e.target.files[0];
-        let socket  = store.getState().socket.io;
+        let socket: Socket = store.getState().socket.io;
         const fileSize = file.size;
-        const chunkSize = 64 * 1024; // 64KB chunks
-        let offset = 0;
+        const chunkSize = 768 * 1024; // 64KB chunks
+        let offset : number = 0;
 
         const readChunk = (chunkOffset : number) => {
             const chunkReader = new FileReader();
             const chunk = file.slice(chunkOffset, chunkOffset + chunkSize);
-
+            props.showModalLoader(true);
             chunkReader.onload = (e : any) => {
-                console.log(e);
-                const buffer = e.target.result;
+                const buffer : ArrayBuffer = e.target.result;
                 socket.emit("uploadChunk", { buffer, offset });
+                socket.on("video-received" , (data : ArrayBuffer)=>{
+                    console.log(data);
+                });
                 offset += buffer.byteLength;
 
                 if (offset < fileSize) {
                     readChunk(offset);
                 } else {
+                    props.showModalLoader(false);
                     socket.emit("uploadComplete");
-                    console.log("Upload complete");
                 }
             };
 
             chunkReader.readAsArrayBuffer(chunk);
+            
         };
 
         socket.emit("uploadStart", { name: file.name, size: fileSize });
+        
+        
         readChunk(0);
     }
+
+    const concatArrayBuffers = (...buffers: ArrayBuffer[]): ArrayBuffer => {
+        const totalByteLength = buffers.reduce((acc, buffer) => acc + buffer.byteLength, 0);
+        const result = new Uint8Array(totalByteLength);
+      
+        let offset = 0;
+        for (const buffer of buffers) {
+          result.set(new Uint8Array(buffer), offset);
+          offset += buffer.byteLength;
+        }
+      
+        return result.buffer;
+      }
 
 
     return (
