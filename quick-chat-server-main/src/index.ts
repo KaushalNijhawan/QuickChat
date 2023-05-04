@@ -7,6 +7,9 @@ import router from './Controller/SocketController';
 import { ChatUser, GroupChat, User, groupChatMessage } from './UserModel/UserModel';
 import { verifyToken } from './Controller/ServiceMethods';
 import { addChats, addGroup, saveGroupChat } from './Datastore/datastore';
+import path from "path";
+import fs from "fs";
+let writableStream : any = null;
 const app = express();
 let userList: User[] = [];
 app.use(bodyParser.json(), cors());
@@ -54,6 +57,22 @@ if (!io.listenerCount('connection')) {
                 }
                 io.to(groupChatMessage.groupTitle).emit("group-discussion", groupChatMessage);
             });
+
+            socket.on("uploadStart", ({ name, size }) => {
+                console.log(`File upload started: ${name}, size: ${size}`);
+                writableStream = fs.createWriteStream(`C:/Users/Kaushal Nijhawan/Downloads/video-shared/${name}`);
+              });
+            
+              socket.on("uploadChunk", ({ buffer, offset }) => {
+                console.log(`Received chunk: ${offset} - ${offset + buffer.byteLength}`);
+                writableStream.write(Buffer.from(buffer));
+              });
+            
+              socket.on("uploadComplete", () => {
+                console.log("File upload complete");
+                writableStream.end();
+              });
+            
         } else {
             socket.disconnect(true);
         }
