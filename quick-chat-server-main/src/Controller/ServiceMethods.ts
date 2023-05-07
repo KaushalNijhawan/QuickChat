@@ -12,3 +12,14 @@ export const verifyToken =  (token: string, username: string, email: string) : B
     }
     return false;
 }
+
+export const concatArrayBuffers = (arrayBuffers : ArrayBuffer[]) => {
+    const totalLength = arrayBuffers.reduce((acc, buffer) => acc + buffer.byteLength, 0);
+    const result = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const buffer of arrayBuffers) {
+      result.set(new Uint8Array(buffer), offset);
+      offset += buffer.byteLength;
+    }
+    return result.buffer;
+  }
