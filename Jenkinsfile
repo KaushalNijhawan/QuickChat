@@ -30,8 +30,10 @@ pipeline {
         		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
         			sh "docker login -u atse2 -p ${dockerhub}"
         		}
-        		myImage.push("${env.BUILD_ID}")
-      	    }
+				script {
+        			myImage.push("${env.BUILD_ID}")
+	      	    }
+			}
     	}
 
     	stage('Deploy to GKE') {
