@@ -5,15 +5,16 @@ import http from "http";
 import cors from "cors";
 import router from './Controller/SocketController';
 import { ChatUser, GroupChat, User, groupChatMessage } from './UserModel/UserModel';
-import { verifyToken } from './Controller/ServiceMethods';
+import { concatArrayBuffers, verifyToken } from './Controller/ServiceMethods';
 import { addChats, addGroup, saveGroupChat } from './Datastore/datastore';
-import path from "path";
-import fs from "fs";
-let writableStream : any = null;
-let buffer : ArrayBuffer;
+import { saveBucketVideo, uploadFileToBucket } from './CloudStorageBucket/CloudStorageBucket';
+import { BUCKET_NAME } from './Constants/Constants';
 const app = express();
-let userList: User[] = [];
 app.use(bodyParser.json(), cors());
+
+let receivedBuffers: ArrayBuffer[] = [];
+
+let otherFileData: string = "";
 
 const server = http.createServer(app);
 
@@ -33,7 +34,6 @@ if (!io.listenerCount('connection')) {
         let response = verifyToken(authObject.token, authObject.username, authObject.email);
         if (response) {
             socket.on("private-message", (responseObject: ChatUser) => {
-                console.log(responseObject);
                 socket.join("private-chat-room");
                 if (responseObject.messageContent.length > 0) {
                     addChats(responseObject).then((res: any) => {
@@ -59,24 +59,40 @@ if (!io.listenerCount('connection')) {
                 }
                 io.to(groupChatMessage.groupTitle).emit("group-discussion", groupChatMessage);
             });
-
+            let fileName: string = "";
             socket.on("uploadStart", ({ name, size }) => {
+                fileName = name;
                 console.log(`File upload started: ${name}, size: ${size}`);
-                writableStream = fs.createWriteStream(`C:/Users/Kaushal Nijhawan/Downloads/video-shared/${name}`);
-              });
+                // writableStream = fs.createWriteStream(`C:/Users/Kaushal Nijhawan/Downloads/video-shared/${name}`);
+            });
             
-              socket.on("uploadChunk", (data  : { buffer : ArrayBuffer , offset : number } ) => {
-                // console.log(`Received chunk: ${data.offset} - ${data.offset + data.buffer.byteLength}`);
+            socket.on("uploadOtherFiles", (buffer) => {
+                // console.log(`Received file with type ${buffer.byteLength}!`);
+                console.log(buffer);
+                // otherFileData = buffer;
+                socket.join("other-file-group");
+                io.to("other-file-group").emit("file-received", buffer);
+            });
+
+            socket.on("uploadChunk", (data: { buffer: ArrayBuffer, offset: number }) => {
+                console.log(`Received chunk: ${data.offset} - ${data.offset + data.buffer.byteLength}`);
                 socket.join("video-sharing");
-                io.to("video-sharing").emit("video-received" , data.buffer);
-                writableStream.write(Buffer.from(data.buffer));
-              });
+                receivedBuffers.push(data.buffer);
+                io.to("video-sharing").emit("video-received", data.buffer);
+                // writableStream.write(Buffer.from(data.buffer));
+            });
             
-              socket.on("uploadComplete", () => {
+            socket.on("uploadComplete", () => {
                 console.log("File upload complete");
-                writableStream.end();
-              });
-            
+                let receivedBuffer = concatArrayBuffers(receivedBuffers);
+                saveBucketVideo(receivedBuffer, fileName).then((res)=>{
+                    console.log(res);
+                    if(res == "saved!"){
+                        socket.emit("bucket-upload-complete", "sucess");
+                    }
+                });
+            });
+
         } else {
             socket.disconnect(true);
         }

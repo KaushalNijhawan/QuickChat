@@ -5,6 +5,7 @@ export interface ChatUser{
     timestamp: number;
     Id: number;
     messageType: string;
+    specialMessage : any;
 }
 
 export interface currentUser {
@@ -35,4 +36,5 @@ export interface GroupChatMessage{
   timestamp: number;
   messageContent : any;
   messageType: string;
+  specialMessage : any;
 }

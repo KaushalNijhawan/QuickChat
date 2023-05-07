@@ -17,7 +17,7 @@ export const chatSlice = createSlice({
             return state;
         },
         appendChat : (state , action: {payload: ChatUser})=>{
-            if(action && action.payload && action.payload.messageContent.length > 0){
+            if(action && action.payload && (action.payload.messageContent.length > 0 || action.payload.specialMessage )){
                 let found : Boolean = false;
                 if(state){
                     for(let i = 0;i<state.length ;i++){

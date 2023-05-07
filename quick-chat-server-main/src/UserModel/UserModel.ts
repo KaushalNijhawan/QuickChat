@@ -8,9 +8,11 @@ export interface User{
 export interface ChatUser{
     fromUsername : string;
     toUsername: string;
-    messageContent : string; 
+    messageContent : any; 
     timestamp: number;
     Id: number;
+    messageType: string;
+    specialMessage: any;
 }
 
 export interface GroupChat{
@@ -24,5 +26,7 @@ export interface groupChatMessage{
     toUsernames: string[];
     Id: number;
     timestamp: number;
-    messageContent : string;
+    messageContent : any;
+    messageType: string;
+    specialMessage: any;
 }
