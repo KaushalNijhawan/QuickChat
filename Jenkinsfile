@@ -17,9 +17,9 @@ pipeline {
 
     	stage('Build Docker Image') {
       	    steps {
-        		sh whoami
+        		sh 'whoami'
         		script {
-        			myImage = docker.build("atse2/quickchatreact:$(env.BUILD_ID)")
+        			myImage = docker.build("atse2/quickchatreact:${env.BUILD_ID}")
         		}
         	}
         }
