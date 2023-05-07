@@ -1,17 +1,18 @@
 export interface ChatUser{
     fromUsername : string;
     toUsername: string;
-    messageContent: string;
+    messageContent: any;
     timestamp: number;
     Id: number;
+    messageType: string;
 }
 
 export interface currentUser {
     selected: Boolean;
     fromUsername: string;
     toUsername: string;
-    messageContent: string;
-  }
+    messageContent: any;
+}
   
 export interface User {
     username: string;
@@ -32,5 +33,6 @@ export interface GroupChatMessage{
   toUsernames: string[];
   Id: number;
   timestamp: number;
-  messageContent : string;
+  messageContent : any;
+  messageType: string;
 }
