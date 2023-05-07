@@ -2,10 +2,11 @@ import {Datastore} from "@google-cloud/datastore";
 import { ChatUser, GroupChat, groupChatMessage } from "../UserModel/UserModel";
 import { UUID, randomUUID } from "crypto";
 import { Namespace } from "socket.io";
+import { CREDENTIALS_PATH, PROJECT_ID } from "../Constants/Constants";
 
 let datastore = new Datastore({
-    projectId: "superb-cycle-384321",
-    keyFilename:"C:/Users/Kaushal Nijhawan/Downloads/superb-cycle.json"
+    projectId: PROJECT_ID,
+    keyFilename: CREDENTIALS_PATH
 });
 
 export const addChats = async (chatUser: ChatUser) =>{
@@ -42,7 +43,9 @@ export const getChats = async () : Promise<any>=>{
                         toUsername : res.toUsername,
                         messageContent : res.messageContent,
                         timestamp : res.timeStamp,
-                        Id: res.Id
+                        Id: res.Id,
+                        messageType : res.messageType,
+                        specialMessage : res.specialMessage
                     });
                 }
             });
@@ -128,8 +131,10 @@ export const getChatsGroupSpecific = async (username : string , groupTitle : str
                             timestamp : res.timestamp,
                             Id : res.Id,
                             groupTitle : res.groupTitle,
-                            messageContent : res.messageContent
-                        })
+                            messageContent : res.messageContent,
+                            messageType:  res.messageType,
+                            specialMessage : res.specialMessage
+                        });
                     }
             })
             return groupChatList;
