@@ -76,7 +76,8 @@ pipeline {
 				F3k/I3EU4kjmkzO1E6451g==
 				-----END CERTIFICATE-----''', credentialsId: 'ATSE 2', serverUrl: 'https://35.200.173.242') {
 					// some block
-			}
+				}
+			}	
 		}
   	}
 }
