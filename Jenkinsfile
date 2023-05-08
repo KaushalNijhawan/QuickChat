@@ -16,23 +16,65 @@ pipeline {
       	    }
     	}
 
-    	stage('Build Docker Image') {
+    	stage('Build Docker Reaact Image') {
       	    steps {
         		sh 'whoami'
         		script {
-        			myImage = docker.build("atse2/quickchatreact:${env.BUILD_ID}")
+        			react = docker.build("atse2/quickchatreact:${env.BUILD_ID}")
         		}
         	}
         }
 
-    	stage('Push Docker Image') {
+		stage('Build Docker Auth Image') {
+      	    steps {
+        		sh 'whoami'
+        		script {
+        			auth = docker.build("atse2/quickchatauth:${env.BUILD_ID}", "-f quick-chat-server-auth/Dockerfile .")
+        		}
+        	}
+        }
+
+		stage('Build Docker Main Image') {
+      	    steps {
+        		sh 'whoami'
+        		script {
+        			main1 = docker.build("atse2/quickchatmain:${env.BUILD_ID}", "-f quick-chat-server-main/Dockerfile .")
+        		}
+        	}
+        }
+
+    	stage('Push Docker React Image') {
       	    steps {
         		echo "Push Docker Image"
         		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
         			sh "docker login -u atse2 -p ${dockerhub}"
         		}
 				script {
-        			myImage.push("${env.BUILD_ID}")
+        			react.push("${env.BUILD_ID}")
+	      	    }
+			}
+    	}
+
+		stage('Push Docker Auth Image') {
+      	    steps {
+        		echo "Push Docker Image"
+        		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+        			sh "docker login -u atse2 -p ${dockerhub}"
+        		}
+				script {
+        			auth.push("${env.BUILD_ID}")
+	      	    }
+			}
+    	}
+
+		stage('Push Docker Main Image') {
+      	    steps {
+        		echo "Push Docker Image"
+        		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+        			sh "docker login -u atse2 -p ${dockerhub}"
+        		}
+				script {
+        			main1.push("${env.BUILD_ID}")
 	      	    }
 			}
     	}
@@ -41,10 +83,16 @@ pipeline {
       	    steps {
 			    echo "Setting up Env to deploy on GKE.....[!]"
 			    sh "sed -i 's/tagversion/${env.BUILD_ID}/g' deployment.yaml"
-    
+				sh "sed -i 's/tagversion/${env.BUILD_ID}/g' quick-chat-server-auth/deployment.yaml"
+				sh "sed -i 's/tagversion/${env.BUILD_ID}/g' quick-chat-server-auth/deployment.yaml"
 			    echo "Starting Deployment..... [!]"
+				echo "Starting React Deployment..... [!]"
 			    step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
-			    echo "Finished Deployment..... [!]"
+			    echo "Starting Auth Deployment..... [!]"
+				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-auth/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+				echo "Starting Main Deployment..... [!]"
+				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-main/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+				echo "Finished Deployment..... [!]"
         		
       	    }
     	}
