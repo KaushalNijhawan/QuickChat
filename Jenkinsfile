@@ -74,8 +74,9 @@ pipeline {
 					E7jT89g4eRt6lebXBs9TTcd33fu+E2VQfsozBpD9Pu7rv07uw4Kn520vp7/XxA0U
 					I1jzTzeC9z9K4cLpxJiyap6xss7wfau5hv9laaRemDCL+7hlMqx2n6JOo6qctqjJ
 					F3k/I3EU4kjmkzO1E6451g==
-					-----END CERTIFICATE-----''', credentialsId: 'bd24928b-0f8d-4981-b357-ae8dc0434d1c', serverUrl: 'https://35.200.173.242') {
+					-----END CERTIFICATE-----''', credentialsId: 'ATSE 2', serverUrl: 'https://35.200.173.242') {
 						// some block
+					}
 				}
 			}
 		}
