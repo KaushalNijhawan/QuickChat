@@ -64,7 +64,7 @@ export const ChatWindow = () => {
   useEffect(() => {
     getChat();
     let socket = store.getState().socket.io;
-    handlePrivateChat("", "", socket , "");
+    handlePrivateChat("", "", socket, "");
   }, []);
 
   const handlejoinSocket = async () => {
@@ -84,13 +84,13 @@ export const ChatWindow = () => {
   }
 
   const handleSendButton = (e: any) => {
-    if(inputRef.current){
-       inputRef.current.value = "";
+    if (inputRef.current) {
+      inputRef.current.value = "";
     }
     e?.preventDefault();
     let socket: Socket = store.getState().socket.io;
     if (!groupToggle) {
-      handlePrivateChat(toUsername, currMessage, socket , "Text");
+      handlePrivateChat(toUsername, currMessage, socket, "Text");
     } else {
       let groupList: GroupChat[] = store.getState().group;
       let usernames: string[] = [];
@@ -113,7 +113,7 @@ export const ChatWindow = () => {
       timestamp: new Date().valueOf(),
       messageContent: message,
       messageType: type,
-      specialMessage : type == "text" ? null : new ArrayBuffer(0)
+      specialMessage: type == "text" ? null : new ArrayBuffer(0)
     }
     socket.emit("group-message", groupChat);
     socket.on("group-discussion", (discussion: GroupChatMessage) => {
@@ -123,19 +123,19 @@ export const ChatWindow = () => {
     });
   }
 
-  const handleSpecialMessage = (specialMessage  : ChatUser |  GroupChatMessage) =>{
-    if(specialMessage){
+  const handleSpecialMessage = (specialMessage: ChatUser | GroupChatMessage) => {
+    if (specialMessage) {
       console.log(specialMessage);
-        if(groupToggle){
-          dispatching(appendGroupChats(specialMessage as GroupChatMessage));
-        }else{
-          dispatching(appendChat(specialMessage as ChatUser));
-        }
-        setChats(specialMessage);
+      if (groupToggle) {
+        dispatching(appendGroupChats(specialMessage as GroupChatMessage));
+      } else {
+        dispatching(appendChat(specialMessage as ChatUser));
+      }
+      setChats(specialMessage);
     }
   }
 
-  const handlePrivateChat = (toUsername: string, messageContent: string, socket: Socket , type : string ) => {
+  const handlePrivateChat = (toUsername: string, messageContent: string, socket: Socket, type: string) => {
     socket.emit("private-message", {
       fromUsername: store.getState().user.username,
       toUsername: toUsername,
@@ -209,8 +209,8 @@ export const ChatWindow = () => {
     }
   }
 
-  const onCloseErrorModal = ()=>{
-     setErrorModal(!errorModal);
+  const onCloseErrorModal = () => {
+    setErrorModal(!errorModal);
   }
 
   return (
@@ -251,14 +251,14 @@ export const ChatWindow = () => {
                 {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
               </div>
               <div className="card-body chat-container">
-                <ErrorModal show = {errorModal} onClose = {onCloseErrorModal} />
+                <ErrorModal show={errorModal} onClose={onCloseErrorModal} />
                 {toUsername ? store.getState().chat.map((chatObj: ChatUser, index: number) => {
                   return (
                     <div className="mb-3" key={index}>
                       <div className={provideClassPlacement(chatObj, toUsername)}>
                         <div className={provideTextHighlight(chatObj, toUsername)}>
-                          {chatObj.messageType == "Text" ? <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p> : 
-                          chatObj.messageType == "video" ? < video src = {URL.createObjectURL(new Blob(chatObj.specialMessage, { type: 'video/mp4' }))} controls/> : null}
+                          {chatObj.messageType == "Text" ? <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p> :
+                            chatObj.messageType == "video" ? < video src={URL.createObjectURL(new Blob(chatObj.specialMessage, { type: 'video/mp4' }))} controls /> : null}
                         </div>
                       </div>
                     </div>
@@ -271,18 +271,18 @@ export const ChatWindow = () => {
                   </div>
                 </div>}
                 {isLoading && (
-                    <div className="text-center my-3">
-                      <Spinner animation="border" variant="primary" size="sm" />
-                      <span className="mx-2">Reading file...</span>
-                    </div>
-                  )}
+                  <div className="text-center my-3">
+                    <Spinner animation="border" variant="primary" size="sm" />
+                    <span className="mx-2">Reading file...</span>
+                  </div>
+                )}
               </div>
               <div className="card-footer">
                 <form>
                   <div className="input-group">
-                    <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername}  onClose = {onCloseErrorModal} toUsernames = {groupUsernames} 
-                    handleSpecialMessage = {handleSpecialMessage} />
-                    <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true}  ref = {inputRef}/>
+                    <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
+                      handleSpecialMessage={handleSpecialMessage} />
+                    <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true} ref={inputRef} />
                     <button className="btn btn-secondary" onClick={(e) => handleOptions(e)} disabled={toUsername ? false : true}> <i className="bi bi-paperclip" style={{ fontSize: "30px" }}></i></button>
                     <button className="btn btn-primary" onClick={(e) => handleSendButton(e)} disabled={toUsername ? false : true}><i className="bi bi-arrow-up" style={{ fontSize: "30px" }} ></i></button>
                   </div>
@@ -297,7 +297,7 @@ export const ChatWindow = () => {
                 {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
               </div>
               <div className="card-body chat-container">
-              <ErrorModal show = {errorModal} onClose = {onCloseErrorModal} />
+                <ErrorModal show={errorModal} onClose={onCloseErrorModal} />
                 {toUsername && store.getState().groupChat.has(toUsername) ? store.getState().groupChat.get(toUsername)?.map((chatObj: GroupChatMessage, index: number) => {
                   return (
                     <div className="mb-3" key={index}>
@@ -316,18 +316,18 @@ export const ChatWindow = () => {
                   </div>
                 </div>}
                 {isLoading && (
-                    <div className="text-center my-3">
-                      <Spinner animation="border" variant="primary" size="sm" />
-                      <span className="mx-2">Sending File...</span>
-                    </div>
+                  <div className="text-center my-3">
+                    <Spinner animation="border" variant="primary" size="sm" />
+                    <span className="mx-2">Sending File...</span>
+                  </div>
                 )}
               </div>
               <div className="card-footer">
                 <form>
                   <div className="input-group">
-                    <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername}  onClose = {onCloseErrorModal} toUsernames = {groupUsernames}
-                    handleSpecialMessage = {handleSpecialMessage} />
-                    <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true} ref = {inputRef} />
+                    <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
+                      handleSpecialMessage={handleSpecialMessage} />
+                    <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true} ref={inputRef} />
                     <button className="btn btn-secondary" onClick={(e) => handleOptions(e)} disabled={toUsername ? false : true}><i className="bi bi-paperclip" style={{ fontSize: "30px" }}></i></button>
                     <button className="btn btn-primary" onClick={(e) => handleSendButton(e)} disabled={toUsername ? false : true}><i className="bi bi-arrow-up" style={{ fontSize: "30px" }} ></i></button>
                   </div>
