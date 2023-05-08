@@ -20,3 +20,21 @@ spec:
         image: atse2/quickchatreact:tagversion
         ports:
         - containerPort: 4002
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quick-chat-react-service
+  labels:
+    app: react-service
+spec:
+  selector:
+    matchLabels:
+      app: react-service
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 5001
+    targetport: 4002
+    nodeport: 32010
