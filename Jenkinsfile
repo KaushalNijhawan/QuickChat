@@ -50,9 +50,9 @@ pipeline {
     	}*/
 		stage("Deploy to GKE") {
 			steps {
-                withCredentials([kubeconfigFile(credentialsId: 'kubernetes', variable: 'KUBECONFIG')]) {
-                    sh 'kubectl apply -f deployment.yaml'
-                }
+                kubeconfig(credentialsId: 'ATSE 2', serverUrl: 'https://35.200.173.242') {
+    				// some block
+				}
 			}
 		}
   	}
