@@ -50,7 +50,8 @@ pipeline {
     	}*/
 		stage("Deploy to GKE") {
 			steps {
-                kubeconfig(caCertificate: '''-----BEGIN CERTIFICATE-----
+				sh "kubectl --kubeconfig kubeconfig create -f deployment.yaml"
+                /*kubeconfig(caCertificate: '''-----BEGIN CERTIFICATE-----
 				MIIELDCCApSgAwIBAgIQAwsfqJ2RmPJtm72WjvGFlDANBgkqhkiG9w0BAQsFADAv
 				MS0wKwYDVQQDEyQ2ZDQxZmE4ZC1jMTk3LTRhYWYtODU0MC1mMGYzMzk5ZThlYjAw
 				IBcNMjMwNTA2MTU1ODIwWhgPMjA1MzA0MjgxNjU4MjBaMC8xLTArBgNVBAMTJDZk
@@ -75,9 +76,11 @@ pipeline {
 				I1jzTzeC9z9K4cLpxJiyap6xss7wfau5hv9laaRemDCL+7hlMqx2n6JOo6qctqjJ
 				F3k/I3EU4kjmkzO1E6451g==
 				-----END CERTIFICATE-----''', credentialsId: 'kb', serverUrl: 'https://35.200.173.242') {
+					// some block
+				}
 				sh "gcloud container clusters get-credentials quick-chat-application --region asia-south1 --project atse-2-385716"
 				sh "kubectl -f deployment.yaml"
-				}
+				}*/
 			}	
 		}
   	}
