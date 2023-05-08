@@ -76,7 +76,7 @@ pipeline {
 				F3k/I3EU4kjmkzO1E6451g==
 				-----END CERTIFICATE-----''', credentialsId: 'kb', serverUrl: 'https://35.200.173.242') {
 				gcloud container clusters get-credentials quick-chat-application --region asia-south1 --project atse-2-385716
-				kubectl -f deployment.yaml
+				//kubectl -f deployment.yaml
 				}
 			}	
 		}
