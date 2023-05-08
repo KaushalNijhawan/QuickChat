@@ -6,7 +6,7 @@ pipeline {
     	CLUSTER_NAME = 'quick-chat-application'
     	REPO_URL = 'https://github.com/ajshukla1902/QuickChat.git'
     	CREDENTIAL_ID = "kubernetes"
-		APP_NAMESPACE = deployment.yaml
+		APP_NAMESPACE = "deployment.yaml"
   	}
   
 	stages {
