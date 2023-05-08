@@ -2,10 +2,11 @@ pipeline {
 	agent any
   	environment {
 		PROJECT_ID = 'atse-2-385716'
-    		LOCATION = 'asia-south1'
-    		CLUSTER_NAME = 'quick-chat-application'
-    		REPO_URL = 'https://github.com/ajshukla1902/QuickChat.git'
-    		CREDENTIAL_ID = "kubernetes"
+    	ZONE = 'asia-south1'
+    	CLUSTER_NAME = 'quick-chat-application'
+    	REPO_URL = 'https://github.com/ajshukla1902/QuickChat.git'
+    	CREDENTIAL_ID = "kubernetes"
+		APP_NAMESPACE = deployment.yaml
   	}
   
 	stages {
@@ -36,7 +37,7 @@ pipeline {
 			}
     	}
 
-    	stage('Deploy to GKE') {
+    	/*stage('Deploy to GKE') {
       	    steps {
 			    echo "Setting up Env to deploy on GKE.....[!]"
 			    sh "sed -i 's/tagversion/${env.BUILD_ID}/g' deployment.yaml"
@@ -46,6 +47,17 @@ pipeline {
 			    echo "Finished Deployment..... [!]"
         		
       	    }
-    	}
+    	}*/
+		stage("Deploy to GKE") {
+			steps {
+				script {
+					swithCredentials([[credentialsId: "${CREDENTIALS_ID}", projectId: "${PROJECT_ID}", serviceAccountKeyVariable: 'GOOGLE_APPLICATION_CREDENTIALS']]) {
+                        sh "gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
+                        sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}"
+                        sh "kubectl apply -f deployment.yaml -n ${APP_NAMESPACE}"
+                    }
+				}
+			}
+		}
   	}
 }
