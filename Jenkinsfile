@@ -5,7 +5,7 @@ pipeline {
     	ZONE = 'asia-south1'
     	CLUSTER_NAME = 'quick-chat-application'
     	REPO_URL = 'https://github.com/ajshukla1902/QuickChat.git'
-    	CREDENTIAL_ID = "kubernetes"
+    	CREDENTIALS_ID = "kubernetes"
 		APP_NAMESPACE = "deployment.yaml"
   	}
   
