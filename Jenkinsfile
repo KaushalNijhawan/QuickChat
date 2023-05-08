@@ -37,7 +37,7 @@ pipeline {
 			}
     	}
 
-    	/*stage('Deploy to GKE') {
+    	stage('Deploy to GKE') {
       	    steps {
 			    echo "Setting up Env to deploy on GKE.....[!]"
 			    sh "sed -i 's/tagversion/${env.BUILD_ID}/g' deployment.yaml"
@@ -47,8 +47,8 @@ pipeline {
 			    echo "Finished Deployment..... [!]"
         		
       	    }
-    	}*/
-		stage("Deploy to GKE") {
+    	}
+		/*stage("Deploy to GKE") {
 			steps {
 				sh "kubectl --kubeconfig kubeconfig create -f deployment.yaml"
                 /*kubeconfig(caCertificate: '''-----BEGIN CERTIFICATE-----
@@ -80,8 +80,8 @@ pipeline {
 				}
 				sh "gcloud container clusters get-credentials quick-chat-application --region asia-south1 --project atse-2-385716"
 				sh "kubectl -f deployment.yaml"
-				}*/
-			}	
+				}
+			}*/	
 		}
   	}
 }
