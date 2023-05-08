@@ -19,4 +19,4 @@ spec:
       - name: main-container
         image: atse2/quickchatmain:tagversion
         ports:
-        - containerPort: 4002
+        - containerPort: 3001
