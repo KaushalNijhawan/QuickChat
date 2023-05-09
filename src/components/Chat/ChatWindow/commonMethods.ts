@@ -38,7 +38,7 @@ export const provideClassPlacementGroup = (chatObj: GroupChatMessage, toUsername
     if (chatObj && toUsername && store.getState().user.username) {
         if (chatObj.fromUsername === store.getState().user.username) {
             return "d-flex justify-content-end";
-        }else {
+        } else {
             return "d-flex justify-content-start";
         }
     }
