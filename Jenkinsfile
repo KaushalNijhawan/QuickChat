@@ -10,24 +10,9 @@ pipeline {
   	}
 
 	stages {
-		stage('Clone code') {
-      	    steps {
-        	    checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: env.REPO_URL]]])
-      	    }
-    	}
-
-		stage('Create Secret for GKE Pods') {
-  			steps {
-				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'Secret.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
-				}
-    	}
-	}
-}
-
-/*	stages {
     	stage('Clone code') {
       	    steps {
-        	    checkout([$class: 'GitSCM', branches: [[name: '/master']], userRemoteConfigs: [[url: env.REPO_URL]]])
+        	    checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: env.REPO_URL]]])
       	    }
     	}
 
@@ -99,7 +84,6 @@ pipeline {
 				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'Secret.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
 				}
     		}
-		}
 
     	stage('Deploy to GKE') {
       	    steps {
@@ -119,4 +103,4 @@ pipeline {
       	    }
     	}
 	}
-}*/
+}

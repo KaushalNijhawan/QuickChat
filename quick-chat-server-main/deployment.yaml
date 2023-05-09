@@ -20,3 +20,11 @@ spec:
         image: atse2/quickchatmain:tagversion
         ports:
         - containerPort: 3001
+        volumeMounts:
+        - name: my-secret-volume
+          mountPath: /secrets
+          readOnly: true
+      volumes:
+        - name: my-secret-volume
+          secret:
+            secretName: quick-chat-secret
