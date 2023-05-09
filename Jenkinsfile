@@ -2,7 +2,7 @@ pipeline {
 	agent any
   	environment {
 		PROJECT_ID = 'atse-2-385716'
-		ZONE = 'us-central1'
+		ZONE = 'us-west1'
     	//ZONE = 'asia-south1'
     	CLUSTER_NAME = 'quick-chat-application'
     	REPO_URL = 'https://github.com/ajshukla1902/QuickChat.git'
