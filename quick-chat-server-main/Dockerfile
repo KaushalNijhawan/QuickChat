@@ -6,8 +6,8 @@ COPY package.json ./
 
 RUN npm install
 
-COPY ./ ./
+RUN npm install -g ts-node-dev
 
-RUN npm run build
+COPY ./ ./
 
 ENTRYPOINT ["npm","start"]
