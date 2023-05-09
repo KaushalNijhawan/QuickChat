@@ -8,15 +8,30 @@ pipeline {
     	CREDENTIALS_ID = "kubernetes"
 		APP_NAMESPACE = "deployment.yaml"
   	}
-  
+
 	stages {
+		stage('Clone code') {
+      	    steps {
+        	    checkout([$class: 'GitSCM', branches: [[name: '/master']], userRemoteConfigs: [[url: env.REPO_URL]]])
+      	    }
+    	}
+		
+		stage('Create Secret for GKE Pods') {
+  			steps {
+				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'Secret.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+				}
+    	}
+	}
+}
+
+/*	stages {
     	stage('Clone code') {
       	    steps {
-        	    checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: env.REPO_URL]]])
+        	    checkout([$class: 'GitSCM', branches: [[name: '/master']], userRemoteConfigs: [[url: env.REPO_URL]]])
       	    }
     	}
 
-    	/*stage('Build Docker Reaact Image') {
+    	stage('Build Docker Reaact Image') {
       	    steps {
         		sh 'whoami'
         		script {
@@ -77,7 +92,7 @@ pipeline {
         			main1.push("${env.BUILD_ID}")
 	      	    }
 			}
-    	}*/
+    	}
 
 		stage('Create Secret for GKE Pods') {
   			steps {
@@ -86,7 +101,7 @@ pipeline {
     		}
 		}
 
-    	/*stage('Deploy to GKE') {
+    	stage('Deploy to GKE') {
       	    steps {
 			    echo "Setting up Env to deploy on GKE.....[!]"
 			    sh "sed -i 's/tagversion/${env.BUILD_ID}/g' deployment.yaml"
@@ -102,6 +117,6 @@ pipeline {
 				echo "Finished Deployment..... [!]"
         		
       	    }
-    	}*/
-  	}
-}
+    	}
+	}
+}*/
