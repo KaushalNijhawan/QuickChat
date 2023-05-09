@@ -3,7 +3,6 @@ pipeline {
   	environment {
 		PROJECT_ID = 'atse-2-385716'
 		ZONE = 'us-west1'
-    	//ZONE = 'asia-south1'
     	CLUSTER_NAME = 'quick-chat-application'
     	REPO_URL = 'https://github.com/ajshukla1902/QuickChat.git'
     	CREDENTIALS_ID = "kubernetes"
@@ -17,7 +16,7 @@ pipeline {
       	    }
     	}
 
-    	stage('Build Docker Reaact Image') {
+    	/*stage('Build Docker Reaact Image') {
       	    steps {
         		sh 'whoami'
         		script {
@@ -78,12 +77,13 @@ pipeline {
         			main1.push("${env.BUILD_ID}")
 	      	    }
 			}
-    	}
+    	}*/
 
 		stage('Create Secret for GKE Pods') {
   			steps {
-    			gkeKubectl(credentialsId: env.CREDENTIALS_ID, clusterName: env.CLUSTER_NAME, namespace: 'default', command: 'create secret generic my-secret --from-file=/var/lib/jenkins/atse-2.json')
-  			}
+				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'Secret.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+				}
+    		}
 		}
 
     	/*stage('Deploy to GKE') {
