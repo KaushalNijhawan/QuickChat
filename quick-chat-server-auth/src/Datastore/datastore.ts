@@ -4,7 +4,7 @@ import { CommitResponse } from "@google-cloud/datastore/build/src/request";
 
 let datastore = new Datastore({
     projectId: "atse-2-385716",
-    keyFilename:"C:/Users/Kaushal Nijhawan/Downloads/atse-2.json"
+    keyFilename:"/secrets/atse-2.json"
 });
 
 export const addUser = async({username , password , email }:{username: string , password : string, email : string})=>{

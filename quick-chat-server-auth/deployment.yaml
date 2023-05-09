@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quick-chat-auth
+  labels:
+    app: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-container
+        image: atse2/quickchatauth:tagversion
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: my-secret-volume
+          mountPath: /secrets
+          readOnly: true
+      volumes:
+        - name: my-secret-volume
+          secret:
+            secretName: quick-chat-secret
+
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "quick-chat-auth-service"
+  namespace: "default"
+  labels:
+    app: "auth-service"
+    app.kubernetes.io/managed-by: "graphite-jenkins-gke"
+spec:
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 3000
+  selector:
+    app: "auth-service"
+  type: "LoadBalancer"
+  loadBalancerIP: ""
