@@ -85,8 +85,8 @@ pipeline {
     			gkeKubectl(credentialsId: env.CREDENTIALS_ID, clusterName: env.CLUSTER_NAME, namespace: 'default', command: 'create secret generic my-secret --from-file=/var/lib/jenkins/atse-2.json')
   			}
 		}
-		
-    	stage('Deploy to GKE') {
+
+    	/*stage('Deploy to GKE') {
       	    steps {
 			    echo "Setting up Env to deploy on GKE.....[!]"
 			    sh "sed -i 's/tagversion/${env.BUILD_ID}/g' deployment.yaml"
@@ -102,6 +102,6 @@ pipeline {
 				echo "Finished Deployment..... [!]"
         		
       	    }
-    	}
+    	}*/
   	}
 }
