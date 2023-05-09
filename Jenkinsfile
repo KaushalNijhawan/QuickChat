@@ -85,7 +85,7 @@ pipeline {
 			    echo "Setting up Env to deploy on GKE.....[!]"
 			    sh "sed -i 's/tagversion/${env.BUILD_ID}/g' deployment.yaml"
 				sh "sed -i 's/tagversion/${env.BUILD_ID}/g' quick-chat-server-auth/deployment.yaml"
-				sh "sed -i 's/tagversion/${env.BUILD_ID}/g' quick-chat-server-auth/deployment.yaml"
+				sh "sed -i 's/tagversion/${env.BUILD_ID}/g' quick-chat-server-main/deployment.yaml"
 			    echo "Starting Deployment..... [!]"
 				echo "Starting React Deployment..... [!]"
 			    step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
