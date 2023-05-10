@@ -33,7 +33,7 @@ export const Login = () => {
 		event.preventDefault();
 		if(state.username && state.password){
 			try{
-				const response = await axios.post("http://34.168.174.126:3000/auth/login" , state ,  {
+				const response = await axios.post("http://35.233.134.93:3000/auth/login" , state ,  {
 				headers:{
 					Accept: "application/json",
 					"Content-Type":"application/json"

@@ -60,7 +60,7 @@ export const Signup = () =>{
 				password : state.password,
 				email : state.email
 			}
-			const response = await axios.post("http://34.168.174.126:3000/auth/signUp" , signUpRequest , {
+			const response = await axios.post("http://35.233.134.93:3000/auth/signUp" , signUpRequest , {
 				headers:{
 					Accept : "application/json"
 				}

@@ -73,7 +73,7 @@ export const provideTextHighlight = (chatObj: ChatUser, toUsername: string): str
 export const getUsersRegistered = async (username: string, email: string, token: string): Promise<User[]> => {
     if (username && token && email) {
         try {
-            let response = await axios.post("http://34.168.174.126:3000/auth/users", {
+            let response = await axios.post("http://35.233.134.93:3000/auth/users", {
                 username: username,
                 email: email
             }, {
