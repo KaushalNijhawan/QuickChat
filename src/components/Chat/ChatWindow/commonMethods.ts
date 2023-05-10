@@ -4,7 +4,7 @@ import { store } from "../../Redux/store";
 export const getChats = async (): Promise<ChatUser[]> => {
     if (store && store.getState() && store.getState().user.token) {
         try {
-            let response = await axios.get("http://quick-chat-main-service:3001/token/chats", {
+            let response = await axios.get("http://34.168.174.126:3001/token/chats", {
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
