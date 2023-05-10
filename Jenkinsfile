@@ -27,7 +27,7 @@ pipeline {
 		stage('Build Docker Auth Image') {
       	    steps {
         		script {
-        			auth = docker.build("atse2/quickchatauth:${env.BUILD_ID}", "./quick-chat-server-auth/Dockerfile .")
+        			auth = docker.build("atse2/quickchatauth:${env.BUILD_ID}", "./quick-chat-server-auth/Dockerfile")
         		}
         	}
         }
@@ -35,7 +35,7 @@ pipeline {
 		stage('Build Docker Main Image') {
       	    steps {
         		script {
-        			main1 = docker.build("atse2/quickchatmain:${env.BUILD_ID}", "./quick-chat-server-main/Dockerfile .")
+        			main1 = docker.build("atse2/quickchatmain:${env.BUILD_ID}", "./quick-chat-server-main/Dockerfile")
         		}
         	}
         }
