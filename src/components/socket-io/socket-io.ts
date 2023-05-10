@@ -8,7 +8,7 @@ export class SocketIO {
 
     init = (token: string , username: string ,  email: string) => {
         if (token) {
-            return io('http://35.233.134.93:4000',
+            return io('http://34.168.174.126:4000',
                 {
                     auth: {
                         token: token,

@@ -73,7 +73,7 @@ export const provideTextHighlight = (chatObj: ChatUser, toUsername: string): str
 export const getUsersRegistered = async (username: string, email: string, token: string): Promise<User[]> => {
     if (username && token && email) {
         try {
-            let response = await axios.post("http://35.233.134.93:3000/auth/users", {
+            let response = await axios.post("http://34.168.174.126:3000/auth/users", {
                 username: username,
                 email: email
             }, {
@@ -93,7 +93,7 @@ export const getUsersRegistered = async (username: string, email: string, token:
 
 export const getGroupList = async (): Promise<GroupChat[]> => {
     try {
-        let response = await axios.get("http://35.233.134.93:3001/token/groups", {
+        let response = await axios.get("http://34.168.174.126:3001/token/groups", {
             headers: {
                 Authorization: `Bearer ${store.getState().user.token}`,
                 Accept: "application/json",
@@ -122,7 +122,7 @@ export const filterGroups = (groupChatList: GroupChat[], username: string): Grou
 export const getGroupChats = async (username: string, groupTitle: string): Promise<GroupChatMessage[]> => {
     if (username && groupTitle) {
         try {
-            let response = await axios.post("http://35.233.134.93:3001/token/groupChats", {
+            let response = await axios.post("http://34.168.174.126:3001/token/groupChats", {
                 username: username,
                 groupTitle: groupTitle
             }, {
