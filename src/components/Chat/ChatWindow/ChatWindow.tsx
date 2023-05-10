@@ -112,7 +112,7 @@ export const ChatWindow = () => {
       Id: store.getState().groupChat.get(groupTitle)?.length != undefined ? store.getState().groupChat.get(groupTitle)?.length as number + 1 : 1,
       timestamp: new Date().valueOf(),
       messageContent: message,
-      messageType: type,
+      type: type,
       specialMessage: type == "text" ? null : new ArrayBuffer(0)
     }
     socket.emit("group-message", groupChat);
@@ -257,8 +257,8 @@ export const ChatWindow = () => {
                     <div className="mb-3" key={index}>
                       <div className={provideClassPlacement(chatObj, toUsername)}>
                         <div className={provideTextHighlight(chatObj, toUsername)}>
-                          {chatObj.messageType == "Text" ? <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p> :
-                            chatObj.messageType == "video" ? < video src={URL.createObjectURL(new Blob(chatObj.specialMessage, { type: 'video/mp4' }))} controls /> : null}
+                          {chatObj.type == "Text" ? <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p> :
+                            chatObj.type == "video" ? < video src={URL.createObjectURL(new Blob(chatObj.specialMessage, { type: 'video/mp4' }))} controls /> : null}
                         </div>
                       </div>
                     </div>

@@ -69,7 +69,7 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
                             groupTitle : props.toUsername , 
                             messageContent : "",
                             specialMessage : fileChunksList,
-                            messageType  : type,
+                            type  : type,
                             timestamp : new Date().valueOf(),
                             toUsernames : props.toUsernames
                         };
@@ -79,7 +79,7 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
                             fromUsername : store.getState().user.username,
                             Id : store.getState().chat.length + 1,
                             messageContent : "",
-                            messageType : type,
+                            type : type,
                             specialMessage : fileChunksList,
                             timestamp : new Date().valueOf(),
                             toUsername : props.toUsername
