@@ -28,4 +28,3 @@ spec:
         - name: my-secret-volume
           secret:
             secretName: quick-chat-secret
-
