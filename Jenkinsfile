@@ -76,11 +76,11 @@ pipeline {
 			}
     	}
 
-		stage('Create Secret for GKE Pods') {
+		/*stage('Create Secret for GKE Pods') {
   			steps {
 				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'Secret.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
-				}
-    		}
+			}
+    	}*/
 
     	stage('Deploy to GKE') {
       	    steps {
@@ -93,8 +93,8 @@ pipeline {
 			    step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
 			    /*echo "Starting Auth Deployment..... [!]"
 				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-auth/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])*/
-				echo "Starting Main Deployment..... [!]"
-				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-main/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+				/*echo "Starting Main Deployment..... [!]"
+				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-main/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])*/
 				echo "Finished Deployment..... [!]"
         		
       	    }
