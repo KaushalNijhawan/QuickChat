@@ -9,9 +9,14 @@ metadata:
     app.kubernetes.io/managed-by: "graphite-jenkins-gke"
 spec:
   ports:
-  - protocol: "TCP"
+  - name: main-service-port
+    protocol: "TCP"
     port: 3001
     targetPort: 3001
+  - name: socket-io-service-port
+    protocol: "TCP"
+    port: 4000
+    targetPort: 4000
   selector:
     app: "main-service"
   type: "LoadBalancer"
