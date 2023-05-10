@@ -91,8 +91,8 @@ pipeline {
 			    echo "Starting Deployment..... [!]"
 				echo "Starting React Deployment..... [!]"
 			    step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
-			    echo "Starting Auth Deployment..... [!]"
-				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-auth/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+			    /*echo "Starting Auth Deployment..... [!]"
+				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-auth/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])*/
 				echo "Starting Main Deployment..... [!]"
 				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-main/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
 				echo "Finished Deployment..... [!]"
