@@ -20,6 +20,7 @@ spec:
         image: atse2/quickchatmain:tagversion
         ports:
         - containerPort: 3001
+        - containerPort: 4000
         volumeMounts:
         - name: my-secret-volume
           mountPath: /secrets
@@ -29,21 +30,3 @@ spec:
           secret:
             secretName: quick-chat-secret
 
----
-apiVersion: "v1"
-kind: "Service"
-metadata:
-  name: "quick-chat-main-service"
-  namespace: "default"
-  labels:
-    app: "main-service"
-    app.kubernetes.io/managed-by: "graphite-jenkins-gke"
-spec:
-  ports:
-  - protocol: "TCP"
-    port: 80
-    targetPort: 3001
-  selector:
-    app: "main-service"
-  type: "LoadBalancer"
-  loadBalancerIP: ""

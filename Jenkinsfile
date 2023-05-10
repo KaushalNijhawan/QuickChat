@@ -10,15 +10,14 @@ pipeline {
   	}
 
 	stages {
-    	stage('Clone code') {
+    	stage('Clone code from GitHub Repo') {
       	    steps {
         	    checkout([$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: env.REPO_URL]]])
       	    }
     	}
 
-    	stage('Build Docker Reaact Image') {
+    	stage('Build Docker React Image') {
       	    steps {
-        		sh 'whoami'
         		script {
         			react = docker.build("atse2/quickchatreact:${env.BUILD_ID}")
         		}
@@ -27,18 +26,16 @@ pipeline {
 
 		stage('Build Docker Auth Image') {
       	    steps {
-        		sh 'whoami'
         		script {
-        			auth = docker.build("atse2/quickchatauth:${env.BUILD_ID}", "-f quick-chat-server-auth/Dockerfile .")
+        			auth = docker.build("atse2/quickchatauth:${env.BUILD_ID}", "./quick-chat-server-auth/")
         		}
         	}
         }
 
 		stage('Build Docker Main Image') {
       	    steps {
-        		sh 'whoami'
         		script {
-        			main1 = docker.build("atse2/quickchatmain:${env.BUILD_ID}", "-f quick-chat-server-main/Dockerfile .")
+        			main1 = docker.build("atse2/quickchatmain:${env.BUILD_ID}", "./quick-chat-server-main/")
         		}
         	}
         }
@@ -79,28 +76,37 @@ pipeline {
 			}
     	}
 
-		stage('Create Secret for GKE Pods') {
-  			steps {
-				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'Secret.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
-				}
-    		}
-
-    	stage('Deploy to GKE') {
+    	stage('GKE Environment Setup') {
       	    steps {
 			    echo "Setting up Env to deploy on GKE.....[!]"
 			    sh "sed -i 's/tagversion/${env.BUILD_ID}/g' deployment.yaml"
 				sh "sed -i 's/tagversion/${env.BUILD_ID}/g' quick-chat-server-auth/deployment.yaml"
 				sh "sed -i 's/tagversion/${env.BUILD_ID}/g' quick-chat-server-main/deployment.yaml"
-			    echo "Starting Deployment..... [!]"
+			}
+		}
+
+		stage('Deploy React Image to GKE Pod') {
+			steps {
 				echo "Starting React Deployment..... [!]"
 			    step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
-			    echo "Starting Auth Deployment..... [!]"
+				echo "Finished React Deployment..... [!]"
+			}
+		}
+
+		stage('Deploy Auth Image to GKE Pod') {
+			steps {
+				echo "Starting Auth Deployment..... [!]"
 				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-auth/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+				echo "Finished Auth Deployment..... [!]"
+			}
+		}
+
+		stage('Deploy Main Image to GKE Pod') {
+			steps {
 				echo "Starting Main Deployment..... [!]"
 				step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.ZONE, manifestPattern: 'quick-chat-server-main/deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
-				echo "Finished Deployment..... [!]"
-        		
-      	    }
-    	}
+				echo "Finished Main Deployment..... [!]"
+			}
+		}
 	}
 }

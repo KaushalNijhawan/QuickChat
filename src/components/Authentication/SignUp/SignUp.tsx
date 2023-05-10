@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
+import { Constants } from "../../../Constants/Constants";
 
 interface User { 
 	username : string;
@@ -60,7 +61,7 @@ export const Signup = () =>{
 				password : state.password,
 				email : state.email
 			}
-			const response = await axios.post("http://quick-chat-auth-service:3000/auth/signUp" , signUpRequest , {
+			const response = await axios.post(`http://${Constants.CHAT_AUTH_IP}:3000/auth/signUp` , signUpRequest , {
 				headers:{
 					Accept : "application/json"
 				}

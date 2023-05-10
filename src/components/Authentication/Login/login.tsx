@@ -4,6 +4,7 @@ import axios from "axios";
 import { setCurrentUser } from "../../Redux/UserRedux";
 import { store } from "../../Redux/store";
 import { useDispatch } from "react-redux";
+import { Constants } from "../../../Constants/Constants";
 interface User{
 	username : string;
 	password: string;
@@ -33,7 +34,7 @@ export const Login = () => {
 		event.preventDefault();
 		if(state.username && state.password){
 			try{
-				const response = await axios.post("http://quick-chat-auth-service:3000/auth/login" , state ,  {
+				const response = await axios.post(`http://${Constants.CHAT_AUTH_IP}:3000/auth/login` , state ,  {
 				headers:{
 					Accept: "application/json",
 					"Content-Type":"application/json"

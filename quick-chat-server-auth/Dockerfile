@@ -6,8 +6,10 @@ COPY package.json ./
 
 RUN npm install
 
-COPY ./ ./
+RUN npm install bcrypt @types/bcrypt
 
-RUN npm run build
+RUN npm install -g ts-node-dev
+
+COPY ./ ./
 
 ENTRYPOINT ["npm","start"]
