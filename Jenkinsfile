@@ -18,7 +18,6 @@ pipeline {
 
     	stage('Build Docker Reaact Image') {
       	    steps {
-        		sh 'whoami'
         		script {
         			react = docker.build("atse2/quickchatreact:${env.BUILD_ID}")
         		}
@@ -27,18 +26,16 @@ pipeline {
 
 		stage('Build Docker Auth Image') {
       	    steps {
-        		sh 'whoami'
         		script {
-        			auth = docker.build("atse2/quickchatauth:${env.BUILD_ID}", "-f quick-chat-server-auth/Dockerfile .")
+        			auth = docker.build("atse2/quickchatauth:${env.BUILD_ID}", "./quick-chat-server-auth/Dockerfile .")
         		}
         	}
         }
 
 		stage('Build Docker Main Image') {
       	    steps {
-        		sh 'whoami'
         		script {
-        			main1 = docker.build("atse2/quickchatmain:${env.BUILD_ID}", "-f quick-chat-server-main/Dockerfile .")
+        			main1 = docker.build("atse2/quickchatmain:${env.BUILD_ID}", "./quick-chat-server-main/Dockerfile .")
         		}
         	}
         }
