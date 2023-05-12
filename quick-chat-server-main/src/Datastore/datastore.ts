@@ -10,7 +10,7 @@ let datastore = new Datastore({
 });
 
 export const addChats = async (chatUser: ChatUser) =>{
-    if(chatUser.fromUsername && chatUser.toUsername && chatUser.messageContent){
+    if(chatUser.fromUsername && chatUser.toUsername && (chatUser.messageContent || chatUser.specialMessage)){
         const childKey = datastore.key({
             path:["User" , chatUser.fromUsername.toLowerCase() , "Chat" , randomUUID().toString()]
         });

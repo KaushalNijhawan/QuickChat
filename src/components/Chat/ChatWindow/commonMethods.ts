@@ -140,3 +140,36 @@ export const getGroupChats = async (username: string, groupTitle: string): Promi
     }
     return [];
 }
+
+export const uploadFileGroup = async (fromUsername: string,toUsernames: string[], ID : number , groupTitle : string , file : File, type: string) =>{
+    try{
+        const formData = new FormData();
+        formData.append('fromUsername' , fromUsername);
+        formData.append('Id' , ID.toString());
+        formData.append('groupTitle' , groupTitle);
+        formData.append('toUsernames' , toUsernames.toString());
+        formData.append('file' , file);
+        formData.append('type', type);
+        let response = await axios.post(`http://${Constants.CHAT_MAIN_IP}:3001/token/upload/group`, formData);
+        console.log(response);
+
+    }catch(err){
+        console.log(err);
+    }
+}
+
+export const uploadFilePrivate = async (fromUsername: string,toUsername: string, ID : number , file  : File, type : string ) =>{
+    try{
+        const formData = new FormData();
+        formData.append('fromUsername' , fromUsername);
+        formData.append('toUsername' , toUsername);
+        formData.append('ID' , ID.toString());
+        formData.append('file', file);
+        formData.append('type', type);
+
+        let response = await axios.post(`http://${Constants.CHAT_MAIN_IP}:3001/token/upload/private`, formData);
+        console.log(response);
+    }catch(err){
+        console.log(err);    
+    }
+}

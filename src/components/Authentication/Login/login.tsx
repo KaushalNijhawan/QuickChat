@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import {useReducer} from "react";
+import {useReducer , useState} from "react";
 import axios from "axios";
 import { setCurrentUser } from "../../Redux/UserRedux";
 import { store } from "../../Redux/store";
 import { useDispatch } from "react-redux";
 import { Constants } from "../../../Constants/Constants";
+import FullPageLoader from "../../Loading-Spinner/Loader";
 interface User{
 	username : string;
 	password: string;
@@ -13,6 +14,7 @@ interface User{
 export const Login = () => {
 	const navigate = useNavigate();
 	const dispatching = useDispatch();
+	const [isLoading , setLoading] = useState(false);
 	const reducer = (state = {username : "" , password : "" , email: ""}, action : any ): User =>{
 		
 		switch(action.type){
@@ -34,6 +36,7 @@ export const Login = () => {
 		event.preventDefault();
 		if(state.username && state.password){
 			try{
+				setLoading(true);
 				const response = await axios.post(`http://${Constants.CHAT_AUTH_IP}:3000/auth/login` , state ,  {
 				headers:{
 					Accept: "application/json",
@@ -48,6 +51,7 @@ export const Login = () => {
 			}catch(err){
 				console.log(err);
 			}
+			setLoading(false);
 		}
 		
 	}
@@ -70,6 +74,7 @@ export const Login = () => {
     return (
         <div className="container">
 		<div className="row justify-content-center">
+			<FullPageLoader show = {isLoading}/>
 			<div className="col-lg-5 col-md-8 col-sm-10">
 				<div className="card mt-5">
 					<div className="card-body">
