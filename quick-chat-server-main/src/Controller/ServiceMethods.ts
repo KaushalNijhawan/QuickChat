@@ -4,7 +4,7 @@ import * as util from 'util';
 import ffmpeg from 'fluent-ffmpeg';
 import { FILE_PATH } from "../Constants/Constants";
 import { addChats, saveGroupChat } from "../Datastore/datastore";
-import { ChatUser, groupChatMessage } from "../UserModel/UserModel";
+import { ChatUser, SpecialMessage, groupChatMessage } from "../UserModel/UserModel";
 
 export const verifyToken =  (token: string, username: string, email: string) : Boolean => {
     if(token && username && email){
@@ -75,11 +75,12 @@ export const compressVideo = (filePath : string, outputFileName : string,sizeRed
 }
 
 export const saveSpecialChatFromPrivate = (fromUsername : string , toUsername : string ,storageBucketFileLink : string , Id : number  , type: string) =>{
+  const specialMessage : SpecialMessage =   {specialMessagelink : storageBucketFileLink , isDownloaded : false};
   let chatUser : ChatUser = {
     fromUsername : fromUsername,
     Id : Id,
     messageContent : "",
-    specialMessage : storageBucketFileLink,
+    specialMessage : specialMessage,
     timestamp : new Date().valueOf(),
     type  : type,
     toUsername : toUsername
@@ -88,12 +89,13 @@ export const saveSpecialChatFromPrivate = (fromUsername : string , toUsername : 
 }
 
 export const saveSpecialChatFromGroup = (fromUsername : string , toUsernames: string ,storageBucketFileLink : string , Id : number, groupTitle : string , type : string ) =>{
+  const specialMessage : SpecialMessage =   {specialMessagelink : storageBucketFileLink , isDownloaded : false};
   let groupChatUserMessage : groupChatMessage = {
     fromUsername : fromUsername , 
     Id : Id,
     groupTitle : groupTitle,
     messageContent : "",
-    specialMessage : storageBucketFileLink,
+    specialMessage : specialMessage,
     timestamp : new Date().valueOf(),
     toUsernames : toUsernames.split(","),
     type : type

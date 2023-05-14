@@ -15,6 +15,7 @@ import { addGroupChats, appendGroupChats } from "../../Redux/GroupChats";
 import { FileModal } from "../FileTransferModal/FileModal";
 import { ErrorModal } from "../ErrorModal/ErrorModal";
 import FullPageLoader from "../../Loading-Spinner/Loader";
+import { setCurrentUser } from "../../Redux/UserRedux";
 
 export const ChatWindow = () => {
   let initialState: Map<String, User> = new Map();
@@ -64,7 +65,13 @@ export const ChatWindow = () => {
   }
 
   useEffect(() => {
-    handlejoinSocket();
+    if(store && store.getState() && store.getState().user.email && store.getState().user.token && store.getState().user.username){
+      handlejoinSocket();
+    }else{
+      const userObject : {username: string , token: string, email : string} = JSON.parse(localStorage.getItem('user') as string);
+      dispatching(setCurrentUser(userObject));
+      handlejoinSocket();
+    }
   }, []);
 
   useEffect(() => {
@@ -144,14 +151,17 @@ export const ChatWindow = () => {
   }
 
   const handlePrivateChat = (toUsername: string, messageContent: string, socket: Socket, type: string) => {
-    socket.emit("private-message", {
+    const specialMessage : SpecialMessage = {specialMessagelink : "" , isDownloaded : true};
+    const chatMessage : ChatUser = {
       fromUsername: store.getState().user.username,
       toUsername: toUsername,
       messageContent: messageContent,
-      timeStamp: new Date().valueOf(),
+      timestamp: new Date().valueOf(),
       Id: store.getState().chat.length + 1,
-      type: type
-    });
+      type: type,
+      specialMessage : specialMessage
+    }
+    socket.emit("private-message", chatMessage);
 
     socket.on("private-chat", (message: ChatUser) => {
       console.log(groupToggle);

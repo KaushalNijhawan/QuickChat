@@ -34,7 +34,7 @@ if (!io.listenerCount('connection')) {
         if (response) {
             socket.on("private-message", (responseObject: ChatUser) => {
                 socket.join("private-chat-room");
-                if (responseObject.messageContent.length > 0) {
+                if (responseObject && responseObject.messageContent.length > 0) {
                     addChats(responseObject).then((res: any) => {
                         console.log(res);
 

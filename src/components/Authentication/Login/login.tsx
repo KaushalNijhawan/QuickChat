@@ -6,6 +6,7 @@ import { store } from "../../Redux/store";
 import { useDispatch } from "react-redux";
 import { Constants } from "../../../Constants/Constants";
 import FullPageLoader from "../../Loading-Spinner/Loader";
+import { setItemsToLocalStorage } from "../LocalStorage/LocalStorage";
 interface User{
 	username : string;
 	password: string;
@@ -45,6 +46,7 @@ export const Login = () => {
 				});
 				if(response && response.data ){
 					let responseData  = response.data;
+					setItemsToLocalStorage(response.data.token,response.data.username ,response.data.email);
 					dispatching(setCurrentUser(responseData));
 					navigate("/chat");
 				}
