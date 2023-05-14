@@ -31,6 +31,7 @@ export const ChatWindow = () => {
   const [groupUsernames, setGroupUsernames] = useState<string[]>([]);
   const dispatching = useDispatch();
   const [errorModal, setErrorModal] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const reducer = (state: Map<String, User>, action: { type: string, payload: User[] }): Map<String, User> => {
@@ -64,7 +65,7 @@ export const ChatWindow = () => {
 
   useEffect(() => {
     handlejoinSocket();
-  }, [store.getState().chat]);
+  }, []);
 
   useEffect(() => {
     getChat();
@@ -219,6 +220,16 @@ export const ChatWindow = () => {
     setErrorModal(!errorModal);
   }
 
+  const handleVideoPlayPause = async () => {
+    if (videoRef.current ) {
+      if(videoRef.current.paused){
+        videoRef.current.play()
+      }else{
+        videoRef.current.pause();
+      }
+    } 
+  }
+
   return (
     <div className="container py-4">
       <div className="row">
@@ -267,7 +278,7 @@ export const ChatWindow = () => {
                     <div className={provideClassPlacement(chatObj, toUsername)}>
                       <div className={provideTextHighlight(chatObj, toUsername)}>
                          {chatObj.type == "Text" ? <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p> :
-                          chatObj.type == "video" ? < video src={URL.createObjectURL(new Blob(chatObj.specialMessage, { type: 'video/mp4' }))} controls /> : null}
+                          chatObj.type == "video" ? < video src={URL.createObjectURL(new Blob([chatObj.specialMessage], { type: 'video/mp4' }))} controls /> : null}
                       </div>
                     </div>
                   </div>

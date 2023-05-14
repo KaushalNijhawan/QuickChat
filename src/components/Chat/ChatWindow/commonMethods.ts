@@ -2,6 +2,8 @@ import axios from "axios"
 import { ChatUser, GroupChat, GroupChatMessage, User } from "../../Model and Interfaces/Models";
 import { store } from "../../Redux/store";
 import { Constants } from "../../../Constants/Constants";
+import { useDispatch } from "react-redux";
+import { appendChat } from "../../Redux/ChatsRedux";
 export const getChats = async (): Promise<ChatUser[]> => {
     if (store && store.getState() && store.getState().user.token) {
         try {
@@ -158,7 +160,7 @@ export const uploadFileGroup = async (fromUsername: string,toUsernames: string[]
     }
 }
 
-export const uploadFilePrivate = async (fromUsername: string,toUsername: string, ID : number , file  : File, type : string ) =>{
+export const uploadFilePrivate = async (fromUsername: string,toUsername: string, ID : number , file  : File, type : string ) : Promise<any> =>{
     try{
         const formData = new FormData();
         formData.append('fromUsername' , fromUsername);
@@ -167,9 +169,25 @@ export const uploadFilePrivate = async (fromUsername: string,toUsername: string,
         formData.append('file', file);
         formData.append('type', type);
 
-        let response = await axios.post(`http://${Constants.CHAT_MAIN_IP}:3001/token/upload/private`, formData);
+        let response = await axios.post(`http://${Constants.CHAT_MAIN_IP}:3001/token/upload/private`, formData, {
+            responseType : "arraybuffer"
+        });
+        if(response && response.data){
+            let privateChat : ChatUser = {
+                fromUsername: fromUsername,
+                toUsername : toUsername,
+                Id : ID,
+                messageContent : "",
+                specialMessage : response.data,
+                timestamp : new Date().valueOf(),
+                type : type
+            }
+            return privateChat;
+        }
         console.log(response);
     }catch(err){
         console.log(err);    
     }
+
+    return null;
 }

@@ -18,7 +18,7 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
     const handleChangeFile = (e: any, type: string) => {
         let file: File = e.target.files[0];
         let socket: Socket = store.getState().socket.io;
-        if((file.size/(1024*1024)) > 70 ){
+        if((file.size/(1024*1024)) > 30 ){
             props.onClose();
             return;
         }
@@ -35,92 +35,6 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
         }
     }
 
-
-    // const handleVideoFiles = async (file: File, socket: Socket , type : string) => {
-    //     const fileSize = file.size;
-    //     const chunkSize = 768 * 1024; // 768KB chunks
-    //     let name = file.name;
-        
-    //     let offset: number = 0;
-    //     let fileChunksList  : ArrayBuffer[] = []; 
-    //     const readChunk = (chunkOffset: number) => {
-    //         const chunkReader = new FileReader();
-    //         const chunk = file.slice(chunkOffset, chunkOffset + chunkSize);
-    //         props.showModalLoader(true);
-    //         chunkReader.onload = (e: any) => {
-    //             let data = chunkReader.result;
-    //             let buffer = e.target.result;
-    //             socket.emit("uploadChunk",
-    //                 {
-    //                     data,
-    //                     offset
-    //                 });
-    //             socket.on("video-received", (data: ArrayBuffer) => {
-    //                 fileChunksList = [...fileChunksList , data];
-    //             });
-    //             offset += buffer.byteLength;
-
-    //             if (offset < fileSize) {
-    //                 readChunk(offset);
-    //             } else {
-    //                 socket.emit("uploadComplete");
-    //                 socket.on("bucket-upload-complete" , (message) =>{
-    //                     props.showModalLoader(false);
-    //                 });
-    //                 if(props.groupToggle){
-    //                     let chatObject : GroupChatMessage = {
-    //                         fromUsername : store.getState().user.username,
-    //                         Id: store.getState().groupChat.get(props.toUsername)?.length != undefined ? store.getState().groupChat.get(props.toUsername)?.length as number + 1 : 1,
-    //                         groupTitle : props.toUsername , 
-    //                         messageContent : "",
-    //                         specialMessage : fileChunksList,
-    //                         messageType  : type,
-    //                         timestamp : new Date().valueOf(),
-    //                         toUsernames : props.toUsernames
-    //                     };
-    //                     props.handleSpecialMessage(chatObject);
-    //                 }else{
-    //                     let chatObject : ChatUser = {
-    //                         fromUsername : store.getState().user.username,
-    //                         Id : store.getState().chat.length + 1,
-    //                         messageContent : "",
-    //                         messageType : type,
-    //                         specialMessage : fileChunksList,
-    //                         timestamp : new Date().valueOf(),
-    //                         toUsername : props.toUsername
-    //                     }
-            
-    //                     props.handleSpecialMessage(chatObject);
-            
-    //                 }
-                    
-    //             }
-    //         };
-
-    //         chunkReader.readAsArrayBuffer(chunk);
-
-    //     };
-
-    //     socket.emit("uploadStart", { name: file.name, size: fileSize });
-    //     // let bufferRes = await compressVideo(file);
-    //     // console.log(bufferRes);
-    //     // fileChunksList = [...fileChunksList, bufferRes];
-        
-
-    //      readChunk(0);
-    // }
-
-    // const concatArrayBuffers = (arrayBuffers: ArrayBuffer[]): ArrayBuffer => {
-    //     const totalLength = arrayBuffers.reduce((acc, buffer) => acc + buffer.byteLength, 0);
-    //     const result = new Uint8Array(totalLength);
-    //     let offset = 0;
-    //     for (const buffer of arrayBuffers) {
-    //         result.set(new Uint8Array(buffer), offset);
-    //         offset += buffer.byteLength;
-    //     }
-    //     return result.buffer;
-    // }
-
     const handleVideoFiles = async (file : File , socket: Socket , type : string) =>{
         if(file && socket && type){
             socket.emit("uploadStart" , { name: file.name, size: file.size });
@@ -133,7 +47,8 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
                 uploadFileGroup(store.getState().user.username,  props.toUsernames , store.getState().groupChat.get(props.toUsername)?.length != undefined ? store.getState().groupChat.get(props.toUsername)?.length as number + 1 : 1 
                 , props.toUsername , file , type);
             }else{
-                uploadFilePrivate(store.getState().user.username,props.toUsername , store.getState().chat.length + 1 ,file, type);
+              let response : ChatUser = await uploadFilePrivate(store.getState().user.username,props.toUsername , store.getState().chat.length + 1 ,file, type);
+              props.handleSpecialMessage(response);
             }
                     
         }

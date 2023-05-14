@@ -8,13 +8,12 @@ import { ChatUser, GroupChat, User, groupChatMessage } from './UserModel/UserMod
 import { concatArrayBuffers, verifyToken } from './Controller/ServiceMethods';
 import { addChats, addGroup, saveGroupChat } from './Datastore/datastore';
 import { saveBucketVideo, uploadFileToBucket } from './CloudStorageBucket/CloudStorageBucket';
-import { BUCKET_NAME } from './Constants/Constants';
+import { writeFile } from "fs";
+
 const app = express();
 app.use(bodyParser.json(), cors());
 
 let receivedBuffers: ArrayBuffer[] = [];
-
-let otherFileData: string = "";
 
 const server = http.createServer(app);
 
@@ -65,29 +64,27 @@ if (!io.listenerCount('connection')) {
                 console.log(`File upload started: ${name}, size: ${size}`);
                 // writableStream = fs.createWriteStream(`C:/Users/Kaushal Nijhawan/Downloads/video-shared/${name}`);
             });
-            
-            socket.on("uploadOtherFiles", (buffer) => {
-                // console.log(`Received file with type ${buffer.byteLength}!`);
-                console.log(buffer);
-                // otherFileData = buffer;
-                socket.join("other-file-group");
-                io.to("other-file-group").emit("file-received", buffer);
-            });
 
-            socket.on("uploadChunk", (data: { buffer: ArrayBuffer, offset: number }) => {
-                console.log(`Received chunk: ${data.offset} - ${data.offset + data.buffer.byteLength}`);
+            socket.on("upload", (file, callback) => {
+                // console.log(`Received chunk: ${data.offset} - ${data.offset + data.buffer.byteLength}`);
                 socket.join("video-sharing");
-                receivedBuffers.push(data.buffer);
-                io.to("video-sharing").emit("video-received", data.buffer);
+                console.log("here");
+                console.log(file);
+                writeFile("C:/Users/Kaushal Nijhawan/Downloads/video-shared", file, (err) => {
+                    callback({ message: err ? "failure" : "success" });
+                  });
+                // let buffer = data.buffer;
+                // receivedBuffers.push(buffer);
+                // io.to("video-sharing").emit("video-received", buffer);
                 // writableStream.write(Buffer.from(data.buffer));
             });
-            
+
             socket.on("uploadComplete", () => {
                 console.log("File upload complete");
                 let receivedBuffer = concatArrayBuffers(receivedBuffers);
-                saveBucketVideo(receivedBuffer, fileName).then((res)=>{
+                saveBucketVideo(receivedBuffer, fileName).then((res) => {
                     console.log(res);
-                    if(res == "saved!"){
+                    if (res == "saved!") {
                         socket.emit("bucket-upload-complete", "sucess");
                     }
                 });
