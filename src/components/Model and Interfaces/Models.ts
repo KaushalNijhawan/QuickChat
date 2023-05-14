@@ -5,7 +5,7 @@ export interface ChatUser{
     timestamp: number;
     Id: number;
     type: string;
-    specialMessage : any;
+    specialMessage : SpecialMessage;
 }
 
 export interface currentUser {
@@ -36,5 +36,10 @@ export interface GroupChatMessage{
   timestamp: number;
   messageContent : any;
   type: string;
-  specialMessage : any;
+  specialMessage : SpecialMessage;
 }
+
+export interface SpecialMessage{
+  specialMessagelink : string;
+  isDownloaded : boolean;
+} 

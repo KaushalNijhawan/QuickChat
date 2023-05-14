@@ -5,7 +5,7 @@ import { store } from "../../Redux/store";
 import { useEffect, useReducer, useState, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { setConnection } from "../../Redux/ClientRedux";
-import { ChatUser, GroupChat, User, GroupChatMessage } from "../../Model and Interfaces/Models";
+import { ChatUser, GroupChat, User, GroupChatMessage, SpecialMessage } from "../../Model and Interfaces/Models";
 import { filterGroups, getChats, getGroupChats, getGroupList, getUsersRegistered, provideClassPlacement, provideClassPlacementGroup, provideTextHighlight, provideTextHighlightGroup } from "./commonMethods";
 import { addChats, appendChat } from "../../Redux/ChatsRedux";
 import { GroupModel } from "../GroupModel/GroupModel";
@@ -111,6 +111,8 @@ export const ChatWindow = () => {
   }
 
   const handleGroupChat = (socket: Socket, toUsername: string[], message: string, groupTitle: string, type: string) => {
+    const specialMessage: SpecialMessage = {specialMessagelink : "", isDownloaded :  true};
+    
     let groupChat: GroupChatMessage = {
       fromUsername: store.getState().user.username,
       toUsernames: toUsername,
@@ -119,7 +121,7 @@ export const ChatWindow = () => {
       timestamp: new Date().valueOf(),
       messageContent: message,
       type: type,
-      specialMessage: type == "text" ? null : new ArrayBuffer(0)
+      specialMessage: specialMessage
     }
     socket.emit("group-message", groupChat);
     socket.on("group-discussion", (discussion: GroupChatMessage) => {
@@ -278,7 +280,7 @@ export const ChatWindow = () => {
                     <div className={provideClassPlacement(chatObj, toUsername)}>
                       <div className={provideTextHighlight(chatObj, toUsername)}>
                          {chatObj.type == "Text" ? <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p> :
-                          chatObj.type == "video" ? < video src={URL.createObjectURL(new Blob([chatObj.specialMessage], { type: 'video/mp4' }))} controls /> : null}
+                          chatObj.type == "video" ? < video src={URL.createObjectURL(new Blob([chatObj.specialMessage.specialMessagelink], { type: 'video/mp4' }))} controls /> : null}
                       </div>
                     </div>
                   </div>

@@ -12,7 +12,7 @@ export interface ChatUser{
     timestamp: number;
     Id: number;
     type: string;
-    specialMessage: any;
+    specialMessage: SpecialMessage;
 }
 
 export interface GroupChat{
@@ -28,5 +28,10 @@ export interface groupChatMessage{
     timestamp: number;
     messageContent : any;
     type: string;
-    specialMessage: any;
+    specialMessage: SpecialMessage;
 }
+
+export interface SpecialMessage{
+    specialMessagelink : string;
+    isDownloaded : boolean;
+} 
