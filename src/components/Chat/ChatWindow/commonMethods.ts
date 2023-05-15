@@ -4,6 +4,7 @@ import { store } from "../../Redux/store";
 import { Constants } from "../../../Constants/Constants";
 import { useDispatch } from "react-redux";
 import { appendChat } from "../../Redux/ChatsRedux";
+import { groupChatSlice } from "../../Redux/GroupChats";
 export const getChats = async (): Promise<ChatUser[]> => {
     if (store && store.getState() && store.getState().user.token) {
         try {
@@ -154,6 +155,24 @@ export const uploadFileGroup = async (fromUsername: string,toUsernames: string[]
         formData.append('type', type);
         let response = await axios.post(`http://${Constants.CHAT_MAIN_IP}:3001/token/upload/group`, formData);
         console.log(response);
+        if(response && response.data){
+            let groupChat : GroupChatMessage = {
+                fromUsername : fromUsername,
+                groupTitle : groupTitle ,
+                Id : ID,
+                messageContent : "",
+                specialMessage : {
+                    isDownloaded : true,
+                    specialMessagelink : "some-link",
+                    messageVideoBuffer : response.data
+                },
+                timestamp : new Date().valueOf(),
+                type : type,
+                toUsernames : toUsernames
+            }
+
+            return groupChat;
+        }
 
     }catch(err){
         console.log(err);
@@ -180,7 +199,8 @@ export const uploadFilePrivate = async (fromUsername: string,toUsername: string,
                 messageContent : "",
                 specialMessage : {
                     isDownloaded : true,
-                    specialMessagelink : response.data
+                    specialMessagelink : "some-link",
+                    messageVideoBuffer : response.data
                 },
                 timestamp : new Date().valueOf(),
                 type : type

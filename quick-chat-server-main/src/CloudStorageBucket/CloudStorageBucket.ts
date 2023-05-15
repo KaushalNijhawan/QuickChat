@@ -12,7 +12,8 @@ const storage = new Storage({
 export const saveBucketVideo = async (videoData: ArrayBuffer, fileName: string) : Promise<string>  => {
     const bucket = storage.bucket(bucketName);
     const file = bucket.file(fileName);
-  const writeStream = file.createWriteStream();
+    console.log(fileName);
+    const writeStream = file.createWriteStream();
 
   // Write the video data to the stream
   writeStream.write(Buffer.from(videoData));

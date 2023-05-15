@@ -34,4 +34,5 @@ export interface groupChatMessage{
 export interface SpecialMessage{
     specialMessagelink : string;
     isDownloaded : boolean;
+    messageVideoBuffer: ArrayBuffer;
 } 

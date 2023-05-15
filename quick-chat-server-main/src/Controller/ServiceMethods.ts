@@ -50,7 +50,7 @@ export const compressVideo = (filePath : string, outputFileName : string,sizeRed
   const readFileAsync = util.promisify(fs.readFile);
   return new Promise<ArrayBuffer>((resolve, reject) => {
     ffmpeg(filePath)
-        .outputOptions('-vf','scale=-2:360')
+        .outputOptions('-vf','scale=-2:480')
         .output(outputFileName)
         .on('end', async () => {
           try {
@@ -75,7 +75,7 @@ export const compressVideo = (filePath : string, outputFileName : string,sizeRed
 }
 
 export const saveSpecialChatFromPrivate = (fromUsername : string , toUsername : string ,storageBucketFileLink : string , Id : number  , type: string) =>{
-  const specialMessage : SpecialMessage =   {specialMessagelink : storageBucketFileLink , isDownloaded : false};
+  const specialMessage : SpecialMessage =   {specialMessagelink : storageBucketFileLink , isDownloaded : false ,messageVideoBuffer : new ArrayBuffer(0)};
   let chatUser : ChatUser = {
     fromUsername : fromUsername,
     Id : Id,
@@ -89,7 +89,7 @@ export const saveSpecialChatFromPrivate = (fromUsername : string , toUsername : 
 }
 
 export const saveSpecialChatFromGroup = (fromUsername : string , toUsernames: string ,storageBucketFileLink : string , Id : number, groupTitle : string , type : string ) =>{
-  const specialMessage : SpecialMessage =   {specialMessagelink : storageBucketFileLink , isDownloaded : false};
+  const specialMessage : SpecialMessage =   {specialMessagelink : storageBucketFileLink , isDownloaded : false , messageVideoBuffer : new ArrayBuffer(0)};
   let groupChatUserMessage : groupChatMessage = {
     fromUsername : fromUsername , 
     Id : Id,

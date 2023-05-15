@@ -74,7 +74,7 @@ router.post('/upload/private', upload.single('file'), (req, res) => {
             try {
                 let response = await compressVideo(newFilePath, outputFileName, 50);
                 responseArray = response;
-                storageBucketLink = await saveBucketVideo(response, req.file?.filename as string);
+                storageBucketLink = await saveBucketVideo(response, req.file?.originalname as string);
                 saveSpecialChatFromPrivate(requestObject.fromUsername, requestObject.toUsername, storageBucketLink, parseInt(requestObject.ID), requestObject.type);
                 console.log(`time taken to compress is ${(new Date().valueOf() - start) / 1000} seconds`);
                 deleteCreatedFile(newFilePath);

@@ -22,7 +22,7 @@ export const ChatWindow = () => {
   const [showGroupModal, setGroupModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [chats, setChats] = useState<any>();
-  const [showSpinner , setSpinner] = useState(false);
+  const [showSpinner, setSpinner] = useState(false);
   const [key, setKey] = useState<string | null>("tab1");
   const [currMessage, setCurrMessgae] = useState("");
   const [toUsername, setToUsername] = useState("");
@@ -60,16 +60,16 @@ export const ChatWindow = () => {
     setSpinner(true);
     getChats().then((res: ChatUser[]) => {
       dispatching(addChats(res));
-    }).finally(()=>{
+    }).finally(() => {
       setSpinner(false);
     })
   }
 
   useEffect(() => {
-    if(store && store.getState() && store.getState().user.email && store.getState().user.token && store.getState().user.username){
+    if (store && store.getState() && store.getState().user.email && store.getState().user.token && store.getState().user.username) {
       handlejoinSocket();
-    }else{
-      const userObject : {username: string , token: string, email : string} = JSON.parse(localStorage.getItem('user') as string);
+    } else {
+      const userObject: { username: string, token: string, email: string } = JSON.parse(localStorage.getItem('user') as string);
       dispatching(setCurrentUser(userObject));
       handlejoinSocket();
     }
@@ -119,8 +119,8 @@ export const ChatWindow = () => {
   }
 
   const handleGroupChat = (socket: Socket, toUsername: string[], message: string, groupTitle: string, type: string) => {
-    const specialMessage: SpecialMessage = {specialMessagelink : "", isDownloaded :  true};
-    
+    const specialMessage: SpecialMessage = { specialMessagelink: "some-link", isDownloaded: true, messageVideoBuffer : new ArrayBuffer(0) };
+
     let groupChat: GroupChatMessage = {
       fromUsername: store.getState().user.username,
       toUsernames: toUsername,
@@ -152,20 +152,23 @@ export const ChatWindow = () => {
   }
 
   const handlePrivateChat = (toUsername: string, messageContent: string, socket: Socket, type: string) => {
-    const specialMessage : SpecialMessage = {specialMessagelink : "" , isDownloaded : true};
-    const chatMessage : ChatUser = {
+    const specialMessage: SpecialMessage = { specialMessagelink: "some-link", isDownloaded: true , messageVideoBuffer : new ArrayBuffer(0)};
+    const chatMessage: ChatUser = {
       fromUsername: store.getState().user.username,
       toUsername: toUsername,
       messageContent: messageContent,
       timestamp: new Date().valueOf(),
       Id: store.getState().chat.length + 1,
       type: type,
-      specialMessage : specialMessage
+      specialMessage: specialMessage
     }
     socket.emit("private-message", chatMessage);
 
     socket.on("private-chat", (message: ChatUser) => {
-      dispatching(appendChat(message));
+      if(toUsername){
+        dispatching(appendChat(message));
+      }
+      
       setChats(message);
     });
   }
@@ -174,7 +177,7 @@ export const ChatWindow = () => {
     setShowModal(!showModal);
   }
 
-  const handleModalGroup = () =>{
+  const handleModalGroup = () => {
     setGroupModal(!showGroupModal)
   }
 
@@ -213,8 +216,8 @@ export const ChatWindow = () => {
     }
   }
 
-  const handleOptions = (e : any) => {
-    if(inputRef.current ){
+  const handleOptions = (e: any) => {
+    if (inputRef.current) {
       inputRef.current.focus();
     }
     e.preventDefault();
@@ -225,8 +228,8 @@ export const ChatWindow = () => {
     setLoading(showModal);
   }
 
-  const handleOptionChange = () =>{
-    if(inputRef.current ){
+  const handleOptionChange = () => {
+    if (inputRef.current) {
       inputRef.current.focus();
     }
     setShowOptions(!showOptions);
@@ -236,7 +239,7 @@ export const ChatWindow = () => {
     setErrorModal(!errorModal);
   }
 
-  
+
   return (
     <div className="container py-4">
       <div className="row">
@@ -268,102 +271,109 @@ export const ChatWindow = () => {
             </div>
           </div>
         </div>
-        {showSpinner ? 
-        <FullPageLoader show = {showSpinner} /> 
-        : 
-        !groupToggle ?
-        <div className="col-md-8">
-          <div className={toUsername ? "card" : "card opacity-50"}>
-            <div className="card-header">
-              {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
-            </div>
-            <div className="card-body chat-container">
-              <ErrorModal show={errorModal} onClose={onCloseErrorModal} />
-              {toUsername ? store.getState().chat.map((chatObj: ChatUser, index: number) => {
-                return (
-                  <div className="mb-3" key={index}>
-                    <div className={provideClassPlacement(chatObj, toUsername)}>
-                      <div className={provideTextHighlight(chatObj, toUsername)}>
-                         {chatObj.type == "Text" ? <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p> :
-                          chatObj.type == "video" ? < video src={URL.createObjectURL(new Blob([chatObj.specialMessage.specialMessagelink], { type: 'video/mp4' }))} controls /> : null}
+        {showSpinner ?
+          <FullPageLoader show={showSpinner} />
+          :
+          !groupToggle ?
+            <div className="col-md-8">
+              <div className={toUsername ? "card" : "card opacity-50"}>
+                <div className="card-header">
+                  {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
+                </div>
+                <div className="card-body chat-container">
+                  <ErrorModal show={errorModal} onClose={onCloseErrorModal} />
+                  {toUsername ? store.getState().chat.map((chatObj: ChatUser, index: number) => {
+                    return (
+                      <div className="mb-3" key={index}>
+                        <div className={provideClassPlacement(chatObj, toUsername)}>
+                          <div className={provideTextHighlight(chatObj, toUsername)}>
+                            {chatObj.type == "Text" ?
+                              <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p> :
+                              chatObj.type == "video" ? chatObj.specialMessage.messageVideoBuffer.byteLength > 0  ?
+                                < video src={URL.createObjectURL(new Blob([chatObj.specialMessage.messageVideoBuffer], { type: 'video/mp4' }))} controls
+                                  style={{ height: "200px", width: "300px" }} /> : 
+                                  <div className="boxy-video-screen">
+                                    <Spinner animation="border" variant="primary" />
+                                  </div>
+                                : null}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }) : <div className="mb-3">
+                    <div className="d-flex justify-content-center">
+                      <div className="text-black p-2 rounded">
+                        <p>Let's begin Your Chat!</p>
                       </div>
                     </div>
-                  </div>
-                )
-              }) : <div className="mb-3">
-                <div className="d-flex justify-content-center">
-                  <div className="text-black p-2 rounded">
-                    <p>Let's begin Your Chat!</p>
-                  </div>
+                  </div>}
+                  {isLoading && (
+                    <div className="text-center my-3">
+                      <Spinner animation="border" variant="primary" size="sm" />
+                      <span className="mx-2">Reading file...</span>
+                    </div>
+                  )}
                 </div>
-              </div>}
-              {isLoading && (
-                <div className="text-center my-3">
-                  <Spinner animation="border" variant="primary" size="sm" />
-                  <span className="mx-2">Reading file...</span>
+                <div className="card-footer">
+                  <form>
+                    <div className="input-group">
+                      {showOptions ? <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
+                        handleSpecialMessage={handleSpecialMessage} handleClose={handleOptionChange} /> : null}
+
+                      <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true} ref={inputRef} />
+                      <button className="btn btn-secondary" onClick={(e) => handleOptions(e)} disabled={toUsername ? false : true}> <i className="bi bi-paperclip" style={{ fontSize: "30px" }}></i></button>
+                      <button className="btn btn-primary" onClick={(e) => handleSendButton(e)} disabled={toUsername ? false : true}><i className="bi bi-arrow-up" style={{ fontSize: "30px" }} ></i></button>
+                    </div>
+                  </form>
                 </div>
-              )}
+              </div>
             </div>
-            <div className="card-footer">
-              <form>
-                <div className="input-group">
-                  {showOptions ? <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
-                    handleSpecialMessage={handleSpecialMessage} handleClose = {handleOptionChange}/> : null}
-                  
-                  <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true} ref={inputRef} />
-                  <button className="btn btn-secondary" onClick={(e) => handleOptions(e)} disabled={toUsername ? false : true}> <i className="bi bi-paperclip" style={{ fontSize: "30px" }}></i></button>
-                  <button className="btn btn-primary" onClick={(e) => handleSendButton(e)} disabled={toUsername ? false : true}><i className="bi bi-arrow-up" style={{ fontSize: "30px" }} ></i></button>
+            :
+            <div className="col-md-8">
+              <div className={toUsername ? "card" : "card opacity-50"}>
+                <div className="card-header">
+                  {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
                 </div>
-              </form>
-            </div>
-          </div>
-        </div>
-        :
-        <div className="col-md-8">
-          <div className={toUsername ? "card" : "card opacity-50"}>
-            <div className="card-header">
-              {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
-            </div>
-            <div className="card-body chat-container">
-              <ErrorModal show={errorModal} onClose={onCloseErrorModal} />
-              {toUsername && store.getState().groupChat.has(toUsername) ? store.getState().groupChat.get(toUsername)?.map((chatObj: GroupChatMessage, index: number) => {
-                return (
-                  <div className="mb-3" key={index}>
-                    <div className={provideClassPlacementGroup(chatObj, toUsername)}>
-                      <div className={provideTextHighlightGroup(chatObj, toUsername)}>
-                        <p>{provideTextHighlightGroup(chatObj, toUsername) ? chatObj.messageContent : null}</p>
+                <div className="card-body chat-container">
+                  <ErrorModal show={errorModal} onClose={onCloseErrorModal} />
+                  {toUsername && store.getState().groupChat.has(toUsername) ? store.getState().groupChat.get(toUsername)?.map((chatObj: GroupChatMessage, index: number) => {
+                    return (
+                      <div className="mb-3" key={index}>
+                        <div className={provideClassPlacementGroup(chatObj, toUsername)}>
+                          <div className={provideTextHighlightGroup(chatObj, toUsername)}>
+                            <p>{provideTextHighlightGroup(chatObj, toUsername) ? chatObj.messageContent : null}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }) : <div className="mb-3">
+                    <div className="d-flex justify-content-center">
+                      <div className="text-black p-2 rounded">
+                        <p>Let's begin Your Chat!</p>
                       </div>
                     </div>
-                  </div>
-                )
-              }) : <div className="mb-3">
-                <div className="d-flex justify-content-center">
-                  <div className="text-black p-2 rounded">
-                    <p>Let's begin Your Chat!</p>
-                  </div>
+                  </div>}
+                  {isLoading && (
+                    <div className="text-center my-3">
+                      <Spinner animation="border" variant="primary" size="sm" />
+                      <span className="mx-2">Sending File...</span>
+                    </div>
+                  )}
                 </div>
-              </div>}
-              {isLoading && (
-                <div className="text-center my-3">
-                  <Spinner animation="border" variant="primary" size="sm" />
-                  <span className="mx-2">Sending File...</span>
+                <div className="card-footer">
+                  <form>
+                    <div className="input-group">
+                      {showOptions ? <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
+                        handleSpecialMessage={handleSpecialMessage} handleClose={handleOptionChange} /> : null}
+
+                      <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true} ref={inputRef} />
+                      <button className="btn btn-secondary" onClick={(e) => handleOptions(e)} disabled={toUsername ? false : true}><i className="bi bi-paperclip" style={{ fontSize: "30px" }}></i></button>
+                      <button className="btn btn-primary" onClick={(e) => handleSendButton(e)} disabled={toUsername ? false : true}><i className="bi bi-arrow-up" style={{ fontSize: "30px" }} ></i></button>
+                    </div>
+                  </form>
                 </div>
-              )}
+              </div>
             </div>
-            <div className="card-footer">
-              <form>
-                <div className="input-group">
-                  {showOptions  ? <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
-                    handleSpecialMessage={handleSpecialMessage} handleClose = {handleOptionChange}/> : null}
-                  
-                  <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true} ref={inputRef} />
-                  <button className="btn btn-secondary" onClick={(e) => handleOptions(e)} disabled={toUsername ? false : true}><i className="bi bi-paperclip" style={{ fontSize: "30px" }}></i></button>
-                  <button className="btn btn-primary" onClick={(e) => handleSendButton(e)} disabled={toUsername ? false : true}><i className="bi bi-arrow-up" style={{ fontSize: "30px" }} ></i></button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
         }
       </div>
     </div>
