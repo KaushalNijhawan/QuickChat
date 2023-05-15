@@ -178,7 +178,10 @@ export const uploadFilePrivate = async (fromUsername: string,toUsername: string,
                 toUsername : toUsername,
                 Id : ID,
                 messageContent : "",
-                specialMessage : response.data,
+                specialMessage : {
+                    isDownloaded : true,
+                    specialMessagelink : response.data
+                },
                 timestamp : new Date().valueOf(),
                 type : type
             }

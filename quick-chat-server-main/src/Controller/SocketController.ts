@@ -62,7 +62,6 @@ router.post('/upload/private', upload.single('file'), (req, res) => {
     const outputFileName = FILE_PATH + '/' + req.file?.originalname + '.mp4';
 
 
-
     fs.rename(originalFilePath, newFilePath, async (err) => {
         if (err) {
             console.error('Error renaming file:', err);
@@ -79,7 +78,7 @@ router.post('/upload/private', upload.single('file'), (req, res) => {
                 saveSpecialChatFromPrivate(requestObject.fromUsername, requestObject.toUsername, storageBucketLink, parseInt(requestObject.ID), requestObject.type);
                 console.log(`time taken to compress is ${(new Date().valueOf() - start) / 1000} seconds`);
                 deleteCreatedFile(newFilePath);
-                deleteCreatedFile(originalFilePath);
+                deleteCreatedFile(outputFileName);
             } catch (err) {
                 console.log(err);
             }
@@ -142,4 +141,5 @@ router.post("/upload/group", upload.single('file'), (req, res) => {
     });
 
 });
+
 export default router;

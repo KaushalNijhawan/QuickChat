@@ -19,6 +19,7 @@ import { setCurrentUser } from "../../Redux/UserRedux";
 
 export const ChatWindow = () => {
   let initialState: Map<String, User> = new Map();
+  const [showGroupModal, setGroupModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [chats, setChats] = useState<any>();
   const [showSpinner , setSpinner] = useState(false);
@@ -164,7 +165,6 @@ export const ChatWindow = () => {
     socket.emit("private-message", chatMessage);
 
     socket.on("private-chat", (message: ChatUser) => {
-      console.log(groupToggle);
       dispatching(appendChat(message));
       setChats(message);
     });
@@ -172,6 +172,10 @@ export const ChatWindow = () => {
 
   const handleModal = () => {
     setShowModal(!showModal);
+  }
+
+  const handleModalGroup = () =>{
+    setGroupModal(!showGroupModal)
   }
 
   const handleDataFromModal = (data: GroupChat) => {
@@ -209,7 +213,10 @@ export const ChatWindow = () => {
     }
   }
 
-  const handleOptions = (e: any) => {
+  const handleOptions = (e : any) => {
+    if(inputRef.current ){
+      inputRef.current.focus();
+    }
     e.preventDefault();
     setShowOptions(!showOptions);
   }
@@ -218,30 +225,18 @@ export const ChatWindow = () => {
     setLoading(showModal);
   }
 
-  const handleFromFileModal = (data: ArrayBuffer, objectTransferDetails: any) => {
-    if (data && objectTransferDetails) {
-      if (groupToggle) {
-
-      } else {
-
-      }
+  const handleOptionChange = () =>{
+    if(inputRef.current ){
+      inputRef.current.focus();
     }
+    setShowOptions(!showOptions);
   }
 
   const onCloseErrorModal = () => {
     setErrorModal(!errorModal);
   }
 
-  const handleVideoPlayPause = async () => {
-    if (videoRef.current ) {
-      if(videoRef.current.paused){
-        videoRef.current.play()
-      }else{
-        videoRef.current.pause();
-      }
-    } 
-  }
-
+  
   return (
     <div className="container py-4">
       <div className="row">
@@ -269,7 +264,7 @@ export const ChatWindow = () => {
                     </ul> : <p style={{ marginTop: "2%" }}>No Groups Created!</p>}
                 </Tab>
               </Tabs>
-              <GroupModel showModal={showModal} initialState={state} handleDataFromModal={handleDataFromModal} handleModal={handleModal} />
+              <GroupModel showModal={showGroupModal} initialState={state} handleDataFromModal={handleDataFromModal} handleModal={handleModalGroup} />
             </div>
           </div>
         </div>
@@ -312,8 +307,9 @@ export const ChatWindow = () => {
             <div className="card-footer">
               <form>
                 <div className="input-group">
-                  <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
-                    handleSpecialMessage={handleSpecialMessage} />
+                  {showOptions ? <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
+                    handleSpecialMessage={handleSpecialMessage} handleClose = {handleOptionChange}/> : null}
+                  
                   <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true} ref={inputRef} />
                   <button className="btn btn-secondary" onClick={(e) => handleOptions(e)} disabled={toUsername ? false : true}> <i className="bi bi-paperclip" style={{ fontSize: "30px" }}></i></button>
                   <button className="btn btn-primary" onClick={(e) => handleSendButton(e)} disabled={toUsername ? false : true}><i className="bi bi-arrow-up" style={{ fontSize: "30px" }} ></i></button>
@@ -357,8 +353,9 @@ export const ChatWindow = () => {
             <div className="card-footer">
               <form>
                 <div className="input-group">
-                  <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
-                    handleSpecialMessage={handleSpecialMessage} />
+                  {showOptions  ? <FileModal showModal={showOptions} showModalLoader={showModalLoader} groupToggle={groupToggle} toUsername={toUsername} onClose={onCloseErrorModal} toUsernames={groupUsernames}
+                    handleSpecialMessage={handleSpecialMessage} handleClose = {handleOptionChange}/> : null}
+                  
                   <input type="text" className="form-control" placeholder="Type your message..." onChange={(e) => setCurrMessgae(e.target.value)} disabled={toUsername ? false : true} ref={inputRef} />
                   <button className="btn btn-secondary" onClick={(e) => handleOptions(e)} disabled={toUsername ? false : true}><i className="bi bi-paperclip" style={{ fontSize: "30px" }}></i></button>
                   <button className="btn btn-primary" onClick={(e) => handleSendButton(e)} disabled={toUsername ? false : true}><i className="bi bi-arrow-up" style={{ fontSize: "30px" }} ></i></button>

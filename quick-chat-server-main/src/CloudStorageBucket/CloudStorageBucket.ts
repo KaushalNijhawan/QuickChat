@@ -11,30 +11,27 @@ const storage = new Storage({
 });
 export const saveBucketVideo = async (videoData: ArrayBuffer, fileName: string) : Promise<string>  => {
     const bucket = storage.bucket(bucketName);
-    const blob = bucket.file(fileName);
-    
-    // const buffer = Buffer.from(videoData);
-    const start  = new Date().getTime();
+    const file = bucket.file(fileName);
+  const writeStream = file.createWriteStream();
 
-
-  const videoFile = bucket.file(fileName);
+  // Write the video data to the stream
+  writeStream.write(Buffer.from(videoData));
   
+  // Finalize the upload
   await new Promise((resolve, reject) => {
-    const stream = videoFile.createWriteStream({
-      resumable: false, // Disable resumable uploads for ArrayBuffer data
-    });
-
-    stream.on('error', reject).on('finish', resolve);
-
-    stream.end(Buffer.from(videoData));
+    writeStream.on('finish', resolve);
+    writeStream.on('error', reject);
+    writeStream.end();
   });
+
   const options : any = {
     version: 'v4',
     action: 'read',
     expires: Date.now() + 15 * 60 * 1000, // 15 minutes
   };
+  const start  = new Date().valueOf();
   console.log(`File Uploaded with the time taken as ${((new Date().getTime() - start)/1000)}  seconds`);
-  const [metadata] = await videoFile.getSignedUrl(options);
+  const [metadata] = await file.getSignedUrl(options);
   return metadata;
 }
 

@@ -1,19 +1,34 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import "./FileMOdal.css";
 import { store } from "../../Redux/store";
 import { Socket } from "socket.io-client";
 import { ChatUser, GroupChatMessage } from "../../Model and Interfaces/Models";
-import axios from "axios";
-import { Constants } from "../../../Constants/Constants";
 import { uploadFileGroup, uploadFilePrivate } from "../ChatWindow/commonMethods";
 export const FileModal = (props: { showModal: boolean, showModalLoader(showModal: boolean): void, groupToggle: boolean, toUsername: string , onClose : any,
-toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatMessage ) : void }) => {
-    const [fileChunks, setFileChunks] = useState<ArrayBuffer[]>([]);
-    const [fileChunk , setFileChunk] = useState<ArrayBuffer>();
+toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatMessage ) : void , handleClose() : void} ) => {
+    const modalRef =  useRef<HTMLElement>(null);
     const handleClose = () => {
-
+        console.log('here');
     }
+
+    const handleEscapeKey = (e : any) =>{
+        e.preventDefault();
+        if (e.keyCode === 27 && props.showModal){
+            props.handleClose();
+        }
+        
+    }
+
+
+    useEffect(()=>{ 
+        
+        document.addEventListener('keydown' , handleEscapeKey);
+
+        return () => {
+            document.removeEventListener('keydown' , handleEscapeKey);
+        }
+    }, [props.showModal]);
 
     const handleChangeFile = (e: any, type: string) => {
         let file: File = e.target.files[0];
@@ -53,12 +68,10 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
                     
         }
     }
-
-
+    
     return (
         <>
-            <Modal show={props.showModal ? true : false} onHide={handleClose} style={{ position: "fixed", top: "60%", left: "79%", width: "7%" }} autoFocus={true}
-                enforceFocus={true} keyboard={true} backdrop={false}>
+            <Modal show={props.showModal ? true : false}  style={{ position: "fixed", top: "60%", left: "79%", width: "7%" }} backdrop="static" keyboard={false}>
                 <Modal.Body>
                     <ul className="list-unstyled text-center">
                         <div className="custom-file" style={{ display: "none" }}>
