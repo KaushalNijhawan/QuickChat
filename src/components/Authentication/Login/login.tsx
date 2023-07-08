@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import {useReducer} from "react";
+import {useReducer, useState} from "react";
 import axios from "axios";
 import { setCurrentUser } from "../../Redux/UserRedux";
 import { store } from "../../Redux/store";
@@ -12,6 +12,8 @@ interface User{
 export const Login = () => {
 	const navigate = useNavigate();
 	const dispatching = useDispatch();
+	const [error , setError] = useState<string>("");
+
 	const reducer = (state = {username : "" , password : "" , email: ""}, action : any ): User =>{
 		
 		switch(action.type){
@@ -28,9 +30,18 @@ export const Login = () => {
 
 	const [state , dispatch] = useReducer(reducer, {username : "" , password : "", email : ""});
 	
+	
+	const validateLoginForm = () =>{
+		if(!state.username || !state.password){
+			setError("Please fill all required fields!");
+		}else{
+			setError("");
+		}
+	}
 
 	const handleLoginClick = async (event: any) =>{
 		event.preventDefault();
+		validateLoginForm();
 		if(state.username && state.password){
 			try{
 				const response = await axios.post("http://localhost:3000/auth/login" , state ,  {
@@ -81,6 +92,9 @@ export const Login = () => {
 							<div className="mb-3">
 								<label htmlFor="password" className="form-label">Password</label>
 								<input type="password" className="form-control" id="password" name="password" required onChange={(e)=> handleChange(e, "password")}/>
+							</div>
+							<div className = "mb-3">
+								<p style={{color:"red" , fontSize:"22px" , fontWeight : "bold"}}>{error}</p>
 							</div>
 							<button type="submit" className="btn btn-primary w-100" onClick={(e) => handleLoginClick(e)} >Login</button>
                             <button type="submit" className="btn btn-dark w-100" style={{marginTop:"1%"}} onClick={handleSignInClick}>Register</button>
