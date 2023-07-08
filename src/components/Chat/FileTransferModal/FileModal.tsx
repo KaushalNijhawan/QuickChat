@@ -43,7 +43,7 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
         }
         switch (type) {
             case "audio":
-                handleVideoFiles(file, socket , type);
+                handleVideoFiles(file, socket, type);
                 break;
             case "files":
                 handleVideoFiles(file, socket, type);

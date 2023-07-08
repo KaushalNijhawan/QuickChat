@@ -23,7 +23,7 @@
     "fs": "^0.0.1-security",
     "os": "^0.1.2",
     "react": "^18.2.0",
-    "react-bootstrap": "^2.7.3",
+    "react-bootstrap": "^2.7.4",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.10.0",
