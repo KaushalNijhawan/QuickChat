@@ -1,10 +1,11 @@
 import { Datastore } from "@google-cloud/datastore";
 import { User } from "./UserModel/UserModel";
 import { CommitResponse } from "@google-cloud/datastore/build/src/request";
+import { CREDENTIALS_PATH, PROJECT_ID } from "../Constants/Constants";
 
 let datastore = new Datastore({
-    projectId: "atse-2-385716",
-    keyFilename:"C:/Users/Kaushal Nijhawan/Downloads/atse-2.json"
+    projectId: PROJECT_ID,
+    keyFilename: CREDENTIALS_PATH
 });
 
 export const addUser = async({username , password , email }:{username: string , password : string, email : string})=>{

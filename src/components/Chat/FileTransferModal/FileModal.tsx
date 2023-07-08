@@ -1,21 +1,43 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal } from "react-bootstrap";
 import "./FileMOdal.css";
 import { store } from "../../Redux/store";
 import { Socket } from "socket.io-client";
 import { ChatUser, GroupChatMessage } from "../../Model and Interfaces/Models";
+import { uploadFileGroup, uploadFilePrivate } from "../ChatWindow/commonMethods";
+import { useDispatch } from "react-redux";
+import { addChats, clearChat } from "../../Redux/ChatsRedux";
 export const FileModal = (props: { showModal: boolean, showModalLoader(showModal: boolean): void, groupToggle: boolean, toUsername: string , onClose : any,
-toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatMessage ) : void }) => {
-    const [fileChunks, setFileChunks] = useState<ArrayBuffer[]>([]);
-    const [fileChunk , setFileChunk] = useState<ArrayBuffer>();
+toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatMessage ) : void , handleClose() : void} ) => {
+    const modalRef =  useRef<HTMLElement>(null);
     const handleClose = () => {
-
+        console.log('here');
     }
+
+    const dispatch = useDispatch();
+
+    const handleEscapeKey = (e : any) =>{
+        e.preventDefault();
+        if (e.keyCode === 27 && props.showModal){
+            props.handleClose();
+        }
+        
+    }
+
+
+    useEffect(()=>{ 
+        
+        document.addEventListener('keydown' , handleEscapeKey);
+
+        return () => {
+            document.removeEventListener('keydown' , handleEscapeKey);
+        }
+    }, [props.showModal]);
 
     const handleChangeFile = (e: any, type: string) => {
         let file: File = e.target.files[0];
         let socket: Socket = store.getState().socket.io;
-        if((file.size/(1024*1024)) > 25 ){
+        if((file.size/(1024*1024)) > 30 ){
             props.onClose();
             return;
         }
@@ -30,93 +52,74 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
                 handleVideoFiles(file, socket, type);
                 break;
         }
-    }
-
-
-    const handleVideoFiles = (file: File, socket: Socket , type : string) => {
-        const fileSize = file.size;
-        const chunkSize = 768 * 1024; // 768KB chunks
-        let offset: number = 0;
-        let fileChunksList  : ArrayBuffer[] = []; 
-        const readChunk = (chunkOffset: number) => {
-            const chunkReader = new FileReader();
-            const chunk = file.slice(chunkOffset, chunkOffset + chunkSize);
-            props.showModalLoader(true);
-            chunkReader.onload = (e: any) => {
-                const buffer: ArrayBuffer = e.target.result;
-                socket.emit("uploadChunk",
-                    {
-                        buffer,
-                        offset
-                    });
-                socket.on("video-received", (data: ArrayBuffer) => {
-                    fileChunksList.push(data);
-                });
-                offset += buffer.byteLength;
-
-                if (offset < fileSize) {
-                    readChunk(offset);
-                } else {
-                    socket.emit("uploadComplete");
-                    socket.on("bucket-upload-complete" , (message) =>{
-                        props.showModalLoader(false);
-                    });
-
-                    if(props.groupToggle){
-                        let chatObject : GroupChatMessage = {
-                            fromUsername : store.getState().user.username,
-                            Id: store.getState().groupChat.get(props.toUsername)?.length != undefined ? store.getState().groupChat.get(props.toUsername)?.length as number + 1 : 1,
-                            groupTitle : props.toUsername , 
-                            messageContent : "",
-                            specialMessage : fileChunksList,
-                            messageType  : type,
-                            timestamp : new Date().valueOf(),
-                            toUsernames : props.toUsernames
-                        };
-                        props.handleSpecialMessage(chatObject);
-                    }else{
-                        let chatObject : ChatUser = {
-                            fromUsername : store.getState().user.username,
-                            Id : store.getState().chat.length + 1,
-                            messageContent : "",
-                            messageType : type,
-                            specialMessage : fileChunksList,
-                            timestamp : new Date().valueOf(),
-                            toUsername : props.toUsername
-                        }
-
-                        props.handleSpecialMessage(chatObject);
-
-                    }
+        if(props.groupToggle){
+            let groupChat : GroupChatMessage = {
+                fromUsername : store.getState().user.username,
+                groupTitle : props.toUsername ,
+                Id : store.getState().groupChat.get(props.toUsername)?.length != undefined ? store.getState().groupChat.get(props.toUsername)?.length as number + 1 : 1,
+                messageContent : "dummy",
+                specialMessage : {
+                    isDownloaded : true,
+                    specialMessagelink : "",
+                    messageVideoBuffer : new ArrayBuffer(0)
+                },
+                timestamp : new Date().valueOf(),
+                type : type,
+                toUsernames : props.toUsernames
+            }
+            props.handleSpecialMessage(groupChat);
+        }else{
+             let privateChat : ChatUser = {
+                fromUsername : store.getState().user.username,
+                Id : store.getState().chat.length + 1,
+                messageContent : "dummy",
+                toUsername : props.toUsername,
+                timestamp : new Date().valueOf(),
+                type : type,
+                specialMessage : 
+                {
+                    isDownloaded : true,
+                    specialMessagelink : "",
+                    messageVideoBuffer : new ArrayBuffer(0)
                 }
-            };
-
-            chunkReader.readAsArrayBuffer(chunk);
-
-        };
-
-        socket.emit("uploadStart", { name: file.name, size: fileSize });
-
-
-        readChunk(0);
-    }
-
-    const concatArrayBuffers = (arrayBuffers: ArrayBuffer[]): ArrayBuffer => {
-        const totalLength = arrayBuffers.reduce((acc, buffer) => acc + buffer.byteLength, 0);
-        const result = new Uint8Array(totalLength);
-        let offset = 0;
-        for (const buffer of arrayBuffers) {
-            result.set(new Uint8Array(buffer), offset);
-            offset += buffer.byteLength;
+                
+             }
+             props.handleSpecialMessage(privateChat);
         }
-        return result.buffer;
+        props.handleClose();
     }
 
+    const handleVideoFiles = async (file : File , socket: Socket , type : string) =>{
+        if(file && socket && type){
+            socket.emit("uploadStart" , { name: file.name, size: file.size });
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('fromUsername' , store.getState().user.username);
+            formData.append('toUsername' , props.toUsername);
+            console.log(props.groupToggle);
+            if(props.groupToggle){
+                uploadFileGroup(store.getState().user.username,  props.toUsernames , store.getState().groupChat.get(props.toUsername)?.length != undefined ? store.getState().groupChat.get(props.toUsername)?.length as number + 1 : 1 
+                , props.toUsername , file , type);
+            }else{
+              let response : ChatUser = await uploadFilePrivate(store.getState().user.username,props.toUsername , store.getState().chat.length + 1 ,file, type);
+              console.log(response);
+              if(store.getState().chat){
+                let chats : ChatUser[] = store.getState().chat.filter((chat)=> chat.specialMessage.specialMessagelink);
+                if(!chats){
+                    dispatch(clearChat());
+                }else{
+                    dispatch(addChats(chats));
+                }
+            }
+              props.handleSpecialMessage(response);
+            }
+                    
+        }
+    }
 
     return (
         <>
-            <Modal show={props.showModal ? true : false} onHide={handleClose} style={{ position: "fixed", top: "60%", left: "79%", width: "7%" }} autoFocus={true}
-                enforceFocus={true} keyboard={true} backdrop={false}>
+            <Modal show={props.showModal ? true : false}  style={{ position: "fixed", top: "60%", left: "79%", width: "7%" }} backdrop="static" keyboard={false}>
                 <Modal.Body>
                     <ul className="list-unstyled text-center">
                         <div className="custom-file" style={{ display: "none" }}>

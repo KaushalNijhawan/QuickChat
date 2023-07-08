@@ -14,7 +14,7 @@ export const userSlice = createSlice({
     name: "user",
     initialState,
     reducers:{
-        setCurrentUser:(state , action : any)=>{
+        setCurrentUser:(state , action : {payload : {username: string , token : string , email : string}})=>{
             if(action && action.payload && action.payload.username  && action.payload.token){
                 state.token = action.payload.token;
                 state.username = action.payload.username;

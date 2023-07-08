@@ -1,9 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import {useReducer, useState} from "react";
+import {useReducer , useState} from "react";
 import axios from "axios";
 import { setCurrentUser } from "../../Redux/UserRedux";
 import { store } from "../../Redux/store";
 import { useDispatch } from "react-redux";
+import { Constants } from "../../../Constants/Constants";
+import FullPageLoader from "../../Loading-Spinner/Loader";
+import { setItemsToLocalStorage } from "../LocalStorage/LocalStorage";
 interface User{
 	username : string;
 	password: string;
@@ -12,8 +15,8 @@ interface User{
 export const Login = () => {
 	const navigate = useNavigate();
 	const dispatching = useDispatch();
-	const [error , setError] = useState<string>("");
-
+	const [isLoading , setLoading] = useState(false);
+	const [error, setError] = useState("");
 	const reducer = (state = {username : "" , password : "" , email: ""}, action : any ): User =>{
 		
 		switch(action.type){
@@ -44,7 +47,8 @@ export const Login = () => {
 		validateLoginForm();
 		if(state.username && state.password){
 			try{
-				const response = await axios.post("http://localhost:3000/auth/login" , state ,  {
+				setLoading(true);
+				const response = await axios.post(`http://${Constants.CHAT_AUTH_IP}:3000/auth/login` , state ,  {
 				headers:{
 					Accept: "application/json",
 					"Content-Type":"application/json"
@@ -52,12 +56,14 @@ export const Login = () => {
 				});
 				if(response && response.data ){
 					let responseData  = response.data;
+					setItemsToLocalStorage(response.data.token,response.data.username ,response.data.email);
 					dispatching(setCurrentUser(responseData));
 					navigate("/chat");
 				}
 			}catch(err){
 				console.log(err);
 			}
+			setLoading(false);
 		}
 		
 	}
@@ -80,6 +86,7 @@ export const Login = () => {
     return (
         <div className="container">
 		<div className="row justify-content-center">
+			<FullPageLoader show = {isLoading}/>
 			<div className="col-lg-5 col-md-8 col-sm-10">
 				<div className="card mt-5">
 					<div className="card-body">

@@ -1,5 +1,6 @@
 import { Storage } from "@google-cloud/storage";
 import { BUCKET_NAME, CREDENTIALS_PATH, PROJECT_ID } from "../Constants/Constants";
+import { Readable } from "stream";
 
 const projectId = PROJECT_ID;
 const keyFilename = CREDENTIALS_PATH;
@@ -10,18 +11,29 @@ const storage = new Storage({
 });
 export const saveBucketVideo = async (videoData: ArrayBuffer, fileName: string) : Promise<string>  => {
     const bucket = storage.bucket(bucketName);
-    const blob = bucket.file(fileName);
-    
-    const buffer = Buffer.from(videoData);
-    const start  = new Date().getTime();
-    try{
-      const response =  await bucket.file("video1.mp4").save(buffer);
-      console.log(`File Uploaded with the time taken as ${((new Date().getTime() - start)/1000)}  seconds`);
-      return "saved!";
-    }catch(err){
-      console.log(err);
-    }
-    return "failed";
+    const file = bucket.file(fileName);
+    console.log(fileName);
+    const writeStream = file.createWriteStream();
+
+  // Write the video data to the stream
+  writeStream.write(Buffer.from(videoData));
+  
+  // Finalize the upload
+  await new Promise((resolve, reject) => {
+    writeStream.on('finish', resolve);
+    writeStream.on('error', reject);
+    writeStream.end();
+  });
+
+  const options : any = {
+    version: 'v4',
+    action: 'read',
+    expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+  };
+  const start  = new Date().valueOf();
+  console.log(`File Uploaded with the time taken as ${((new Date().getTime() - start)/1000)}  seconds`);
+  const [metadata] = await file.getSignedUrl(options);
+  return metadata;
 }
 
 export const uploadFileToBucket = async (base64Data : string, fileName: string, bucketName : string)=> {

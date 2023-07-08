@@ -17,7 +17,7 @@ export const chatSlice = createSlice({
             return state;
         },
         appendChat : (state , action: {payload: ChatUser})=>{
-            if(action && action.payload && (action.payload.messageContent.length > 0 || action.payload.specialMessage )){
+            if(action && action.payload ){
                 let found : Boolean = false;
                 if(state){
                     for(let i = 0;i<state.length ;i++){
@@ -35,10 +35,14 @@ export const chatSlice = createSlice({
             }
 
             return state;
+        },
+        clearChat : (state)=>{
+            state = initialState;
+            return state;
         }
     }
 });
 
-export const {addChats,  appendChat} = chatSlice.actions;
+export const {addChats,  appendChat, clearChat} = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -1,4 +1,5 @@
 import { io } from "socket.io-client";
+import { Constants } from "../../Constants/Constants";
 
 export class SocketIO {
     socketObject: any;
@@ -8,7 +9,7 @@ export class SocketIO {
 
     init = (token: string , username: string ,  email: string) => {
         if (token) {
-            return io('http://localhost:4000',
+            return io(`http://${Constants.CHAT_MAIN_IP}:4000`,
                 {
                     auth: {
                         token: token,

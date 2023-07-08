@@ -10,7 +10,7 @@ let datastore = new Datastore({
 });
 
 export const addChats = async (chatUser: ChatUser) =>{
-    if(chatUser.fromUsername && chatUser.toUsername && chatUser.messageContent){
+    if(chatUser.fromUsername && chatUser.toUsername && (chatUser.messageContent || chatUser.specialMessage)){
         const childKey = datastore.key({
             path:["User" , chatUser.fromUsername.toLowerCase() , "Chat" , randomUUID().toString()]
         });
@@ -44,7 +44,7 @@ export const getChats = async () : Promise<any>=>{
                         messageContent : res.messageContent,
                         timestamp : res.timeStamp,
                         Id: res.Id,
-                        messageType : res.messageType,
+                        type : res.type,
                         specialMessage : res.specialMessage
                     });
                 }
@@ -132,7 +132,7 @@ export const getChatsGroupSpecific = async (username : string , groupTitle : str
                             Id : res.Id,
                             groupTitle : res.groupTitle,
                             messageContent : res.messageContent,
-                            messageType:  res.messageType,
+                            type:  res.type,
                             specialMessage : res.specialMessage
                         });
                     }

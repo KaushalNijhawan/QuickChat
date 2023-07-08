@@ -7,3 +7,11 @@ li{
     cursor: pointer;
     margin-top: 1%;
 }
+.boxy-video-screen {
+    width: 400px;
+    height: 300px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
