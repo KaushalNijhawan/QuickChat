@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { Constants } from "../../../Constants/Constants";
 import FullPageLoader from "../../Loading-Spinner/Loader";
 import { setItemsToLocalStorage } from "../LocalStorage/LocalStorage";
+import "./login.css";
 interface User{
 	username : string;
 	password: string;
@@ -101,7 +102,7 @@ export const Login = () => {
 								<input type="password" className="form-control" id="password" name="password" required onChange={(e)=> handleChange(e, "password")}/>
 							</div>
 							<div className = "mb-3">
-								<p style={{color:"red" , fontSize:"22px" , fontWeight : "bold"}}>{error}</p>
+								<p className="error">{error}</p>
 							</div>
 							<button type="submit" className="btn btn-primary w-100" onClick={(e) => handleLoginClick(e)} >Login</button>
                             <button type="submit" className="btn btn-dark w-100" style={{marginTop:"1%"}} onClick={handleSignInClick}>Register</button>

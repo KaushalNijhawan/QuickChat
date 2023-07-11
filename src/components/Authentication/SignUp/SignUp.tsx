@@ -2,6 +2,9 @@ import axios from "axios";
 import { useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Constants } from "../../../Constants/Constants";
+import validator from "validator";
+import "./SignUp.css";
+import { useForm } from "react-hook-form";
 
 interface User {
 	username: string;
@@ -12,6 +15,15 @@ interface User {
 export const Signup = () => {
 	const navigate = useNavigate();
 	const [isLoading, setLoading] = useState(false);
+
+	const {register , handleSubmit , formState : {errors}, getValues, setValue, setError, clearErrors} = useForm({
+		defaultValues:{
+			username : "",
+			password: "",
+			confirmPassword : "",
+			email : ""
+		}
+	});
 	const reducer = (state = { username: "", password: "", email: "", confirmPassword: "" }, action: any): User => {
 
 		switch (action.type) {
@@ -32,35 +44,36 @@ export const Signup = () => {
 		}
 	}
 
-	const handleChange = (event: any, type: string) => {
-		if (event && type) {
+	const handleChange = (event: any, type: string , errorMessage?: string) => {
+		if(type) {
 			if (type == "username") {
 				dispatch({ type: type, username: event.target.value });
 			} else if (type == "password") {
 				dispatch({ type: type, password: event.target.value });
 			} else if (type == "email") {
 				dispatch({ type: type, email: event.target.value });
-			} else {
-				dispatch({ type: type, confirmPassword: event.target.value });
+			} else if(type == "confirmPassword"){
+				dispatch({ type: type, confirmPassword: event.target.value});
 			}
-
 		}
 	}
 
-	const [state, dispatch] = useReducer(reducer, { username: "", password: "", email: "", confirmPassword: "" });
+	
+
+	const [state, dispatch] = useReducer(reducer, { username: "", password: "", email: "", confirmPassword: ""});
 
 	const handleLoginClick = () => {
 		navigate("/");
 	}
 
-	const handleSignInClick = async (event: any) => {
-		event?.preventDefault();
-		if (state && state.email && state.password && state.username && state.confirmPassword) {
+	const handleSignInClick = async (data: User) => {
+		let user: User = data;
+		if (user && user.email && user.password && user.username && user.confirmPassword) {
 			setLoading(true);
 			let signUpRequest = {
-				username: state.username,
-				password: state.password,
-				email: state.email
+				username: user.username,
+				password: user.password,
+				email: user.email
 			}
 			try {
 				const response = await axios.post(`http://${Constants.CHAT_AUTH_IP}:3000/auth/signUp`, signUpRequest, {
@@ -86,25 +99,48 @@ export const Signup = () => {
 					<div className="card mt-5">
 						<div className="card-body">
 							<h3 className="text-center mb-4">Signup</h3>
-							<form>
+							<form onSubmit={handleSubmit(handleSignInClick)}>
 								<div className="mb-3">
 									<label htmlFor="name" className="form-label">Name</label>
-									<input type="text" className="form-control" id="name" name="name" required onChange={(e) => handleChange(e, "username")} />
+									<input type="text" className="form-control" id="name" required {...register('username' , {required : "Username is Required" , minLength:{
+										message:"Username should be ateast 8 length", value : 8}
+									}) } />
+									<p className="error">{errors.username?.message}</p>
 								</div>
 								<div className="mb-3">
 									<label htmlFor="email" className="form-label">Email</label>
-									<input type="email" className="form-control" id="email" name="email" required onChange={(e) => handleChange(e, "email")} />
+									<input type="text" className="form-control" id="email" {...register('email' ,{required :"Email is Required" , onChange(event) {
+										let email = event.target.value;
+
+										if(!validator.isEmail(email)){
+											setError("email" ,{message :"Invalid Email"})
+										}else{
+											clearErrors("email");
+										}
+									},})} />
+									<p className="error">{errors.email?.message}</p>
 								</div>
 								<div className="mb-3">
 									<label htmlFor="password" className="form-label">Password</label>
-									<input type="password" className="form-control" id="password" name="password" required onChange={(e) => handleChange(e, "password")} />
+									<input type="password" className="form-control" id="password" {...register('password', {minLength :{value : 8 , message : "Password should be atleast 8 character length!" } , required :"Password is Required!"})}/>
+									<p className="error">{errors.password?.message}</p>
 								</div>
 								<div className="mb-3">
 									<label htmlFor="confirm_password" className="form-label">Confirm Password</label>
-									<input type="password" className="form-control" id="confirm_password" name="confirm_password" required onChange={(e) => handleChange(e, "confirmPassword")} />
+									<input type="password" className="form-control" id="confirm_password" {...register('confirmPassword' ,{required : "Required Field!" , onChange (event) {
+										let confirmPassword : string = event.target.value;
+										let password : string  = getValues('password');
+										if(password != confirmPassword){
+											setError("confirmPassword",{message : "Password and confirm password doesn't match!"}) ;
+										}else{
+											clearErrors("confirmPassword");
+										}
+									},})} />
+									<p className="error">{errors.confirmPassword?.message}</p>
+									
 								</div>
-								<button type="submit" className="btn btn-dark w-100" onClick={(e) => handleSignInClick(e)}>Signup</button>
-								<button type="submit" className="btn btn-primary w-100" style={{ marginTop: "1%" }} onClick={handleLoginClick}>Login</button>
+								<button type="submit" className="btn btn-dark w-100" >Signup</button>
+								<button className="btn btn-primary w-100" style={{ marginTop: "1%" }} onClick={handleLoginClick}>Login</button>
 							</form>
 						</div>
 					</div>
