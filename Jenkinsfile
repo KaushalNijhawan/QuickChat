@@ -1,10 +1,10 @@
 pipeline {
 	agent any
   	environment {
-		PROJECT_ID = 'atse-2-385716'
-		ZONE = 'us-west1'
-    	CLUSTER_NAME = 'quick-chat-application'
-    	REPO_URL = 'https://github.com/ajshukla1902/QuickChat.git'
+		PROJECT_ID = 'burnished-flare-396308'
+		ZONE = 'us-central1'
+    	CLUSTER_NAME = 'jenkins-chat-app-cluster'
+    	REPO_URL = 'https://github.com/KaushalNijhawan/QuickChat.git'
     	CREDENTIALS_ID = "kubernetes"
 		APP_NAMESPACE = "deployment.yaml"
   	}
