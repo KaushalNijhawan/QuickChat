@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import {useReducer , useState} from "react";
 import axios from "axios";
 import { setCurrentUser } from "../../Redux/UserRedux";
-import { store } from "../../Redux/store";
 import { useDispatch } from "react-redux";
 import { Constants } from "../../../Constants/Constants";
 import FullPageLoader from "../../Loading-Spinner/Loader";
@@ -91,7 +90,7 @@ export const Login = () => {
 			<div className="col-lg-5 col-md-8 col-sm-10">
 				<div className="card mt-5">
 					<div className="card-body">
-						<h3 className="text-center mb-4">Login</h3>
+						<h3 className="text-center mb-4">Login</h3>	
 						<form>
 							<div className="mb-3">
 								<label htmlFor="username" className="form-label">Username</label>
