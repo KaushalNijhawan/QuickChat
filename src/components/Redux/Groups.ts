@@ -19,9 +19,12 @@ export const groupSlice = createSlice({
                 return [...state , action.payload];
             }
             return state;
+        },
+        resetGroups: (state, action:{payload: any})=>{
+            state = [];
         }
     }
 });
 
-export const {addGroups , appendGroups} = groupSlice.actions;
+export const {addGroups , appendGroups , resetGroups} = groupSlice.actions;
 export default groupSlice.reducer;

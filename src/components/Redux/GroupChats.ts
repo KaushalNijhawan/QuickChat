@@ -49,10 +49,13 @@ export const groupChatSlice = createSlice({
                 }
             }
             return state;
+        },
+        resetChats:(state, action: {payload : any})=>{
+            state = new Map<String , GroupChatMessage[]>();
         }
     }
 });
 
-export const {addGroupChats , appendGroupChats} = groupChatSlice.actions;
+export const {addGroupChats , appendGroupChats , resetChats} = groupChatSlice.actions;
 
 export default groupChatSlice.reducer;

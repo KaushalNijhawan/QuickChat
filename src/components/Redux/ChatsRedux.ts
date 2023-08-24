@@ -36,7 +36,7 @@ export const chatSlice = createSlice({
 
             return state;
         },
-        clearChat : (state)=>{
+        clearChat : (state, action:{payload: any})=>{
             state = initialState;
             return state;
         }

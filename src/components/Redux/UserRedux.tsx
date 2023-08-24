@@ -20,10 +20,17 @@ export const userSlice = createSlice({
                 state.username = action.payload.username;
                 state.email = action.payload.email;
             }
-        }
+        },
+        resetState:(state , action: {payload :  any})=>{
+            state = {
+                username : "",
+                token : "",
+                email :""
+            }
+        },
     }
 });
 
-export const {setCurrentUser } = userSlice.actions;
+export const {setCurrentUser , resetState } = userSlice.actions;
 
 export default userSlice.reducer;

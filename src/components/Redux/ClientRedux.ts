@@ -16,9 +16,12 @@ export const socketSlice = createSlice({
             if(action && action.payload ){
                 state.io = action.payload;
             }
+         },
+         resetConnection:(state, action: {payload:any}) =>{
+            state.io = null;
          }
     },
   });
 
-export const { setConnection } = socketSlice.actions;
+export const { setConnection , resetConnection} = socketSlice.actions;
 export default socketSlice.reducer;

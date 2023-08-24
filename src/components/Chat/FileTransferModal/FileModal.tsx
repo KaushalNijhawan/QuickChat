@@ -106,7 +106,7 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
               if(store.getState().chat){
                 let chats : ChatUser[] = store.getState().chat.filter((chat)=> chat.specialMessage.specialMessagelink);
                 if(!chats){
-                    dispatch(clearChat());
+                    dispatch(clearChat(null));
                 }else{
                     dispatch(addChats(chats));
                 }

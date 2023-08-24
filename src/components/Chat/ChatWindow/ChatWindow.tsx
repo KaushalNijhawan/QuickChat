@@ -4,18 +4,19 @@ import { Socket } from "socket.io-client";
 import { store } from "../../Redux/store";
 import { useEffect, useReducer, useState, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { setConnection } from "../../Redux/ClientRedux";
+import { resetConnection, setConnection } from "../../Redux/ClientRedux";
 import { ChatUser, GroupChat, User, GroupChatMessage, SpecialMessage } from "../../Model and Interfaces/Models";
 import { filterGroups, getChats, getGroupChats, getGroupList, getUsersRegistered, provideClassPlacement, provideClassPlacementGroup, provideTextHighlight, provideTextHighlightGroup } from "./commonMethods";
-import { addChats, appendChat } from "../../Redux/ChatsRedux";
+import { addChats, appendChat, clearChat } from "../../Redux/ChatsRedux";
 import { GroupModel } from "../GroupModel/GroupModel";
 import { Tabs, Tab, Spinner } from "react-bootstrap";
-import { addGroups, appendGroups } from "../../Redux/Groups";
-import { addGroupChats, appendGroupChats } from "../../Redux/GroupChats";
+import { addGroups, appendGroups, resetGroups } from "../../Redux/Groups";
+import { addGroupChats, appendGroupChats, resetChats } from "../../Redux/GroupChats";
 import { FileModal } from "../FileTransferModal/FileModal";
 import { ErrorModal } from "../ErrorModal/ErrorModal";
 import FullPageLoader from "../../Loading-Spinner/Loader";
 import { setCurrentUser } from "../../Redux/UserRedux";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export const ChatWindow = () => {
   let initialState: Map<String, User> = new Map();
@@ -35,7 +36,7 @@ export const ChatWindow = () => {
   const [errorModal, setErrorModal] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const navigate = useNavigate();
   const reducer = (state: Map<String, User>, action: { type: string, payload: User[] }): Map<String, User> => {
     switch (action.type) {
       case "createUserList":
@@ -239,6 +240,14 @@ export const ChatWindow = () => {
     setErrorModal(!errorModal);
   }
 
+  const handleSignOut = () =>{
+      dispatch(resetChats(null));
+      dispatch(resetConnection(null));
+      dispatch(resetGroups(null));
+      dispatch(clearChat(null));
+      navigate("/");
+  }
+
 
   return (
     <div className="container py-4">
@@ -246,7 +255,7 @@ export const ChatWindow = () => {
         <div className="col-md-4">
           <div className="card">
             <div className="card-header">
-              <h4>Hey, {store.getState().user.username}</h4>
+              <h4 style={{display:"flex" , justifyContent : "space-between"}}>Hey, {store.getState().user.username}<span><i className="bi bi-box-arrow-right" onClick={handleSignOut}></i></span></h4> 
               <a className="btn btn-outline-dark" onClick={handleModal}>Create Group</a>
             </div>
             <div className="card-body">
