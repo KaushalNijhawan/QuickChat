@@ -113,7 +113,7 @@
 pipeline {
    	agent any
     environment {
-        registry = "344421552488.dkr.ecr.us-east-2.amazonaws.com/my-docker-repo",
+        registry = "344421552488.dkr.ecr.us-east-2.amazonaws.com/my-docker-repo"
 		REPO_URL = 'https://github.com/KaushalNijhawan/QuickChat.git'
     }
    
