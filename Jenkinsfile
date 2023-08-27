@@ -145,6 +145,19 @@ pipeline {
         		}
         	}
         }
+
+		stage('Push Docker Main Image') {
+      	    steps {
+        		echo "Push Docker Image"
+        		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+        			sh "docker login -u atse2 -p ${dockerhub}"
+        		}
+				script {
+        			main1.push("${env.BUILD_ID}")
+	      	    }
+			}
+    	}
+
 		stage('Push Docker React Image') {
       	    steps {
         		echo "Push Docker Image"
@@ -167,19 +180,6 @@ pipeline {
 	      	    }
 			}
     	}
-
-		stage('Push Docker Main Image') {
-      	    steps {
-        		echo "Push Docker Image"
-        		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
-        			sh "docker login -u atse2 -p ${dockerhub}"
-        		}
-				script {
-        			main1.push("${env.BUILD_ID}")
-	      	    }
-			}
-    	}
-
     // Building Docker images
     // stage('Building image') {
     //   steps{
