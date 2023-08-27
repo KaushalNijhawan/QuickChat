@@ -151,7 +151,7 @@ pipeline {
 		stage('Push Docker Main Image') {
       	    steps {
         		echo "Push Docker Image"
-        		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+        		withCredentials([string(credentialsId: dockerhub, variable: dockerhub)]) {
         			sh "docker login -u atse2 -p ${dockerhub}"
         		}
 				script {
