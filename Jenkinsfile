@@ -207,7 +207,7 @@ pipeline {
        stage('K8S Deploy') {
         steps{   
             script {
-                withKubeConfig([credentialsId: 'eks', serverUrl: '']) {
+                withKubeConfig([credentialsId: 'eks', serverUrl: 'https://3D072A0967A0E282157567FE40827461.gr7.us-east-1.eks.amazonaws.com']) {
                 	sh ('kubectl apply -f deployment.yaml')
 					sh ('kubectl apply -f quick-chat-server-auth/deployment.yaml')
 					sh ('kubectl apply -f quick-chat-server-main/deployment.yaml')
