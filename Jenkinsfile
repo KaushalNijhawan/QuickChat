@@ -163,9 +163,10 @@ pipeline {
 		stage('Push Docker Main Image') {
       	    steps {
         		echo "Push Docker Image"
-        		withCredentials([string(credentialsId: dockerhub, variable: dockerhub)]) {
-					sh "docker login -u atse2 -p Cladiana@1991#\$"
-        		}
+        		sh "docker login -u atse2 -p Cladiana@1991#\$"
+				// withCredentials([string(credentialsId: dockerhub, variable: dockerhub)]) {
+				// 	
+        		// }
 				script {
         			main1.push("${env.BUILD_ID}")
 	      	    }
@@ -175,9 +176,10 @@ pipeline {
 		stage('Push Docker Auth Image') {
       	    steps {
         		echo "Push Docker Image"
-        		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
-        			sh "docker login -u atse2 -p Cladiana@1991#\$"
-        		}
+        		sh "docker login -u atse2 -p Cladiana@1991#\$"
+				// withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+        		// 	
+        		// }
 				script {
         			auth.push("${env.BUILD_ID}")
 	      	    }
