@@ -147,6 +147,17 @@ pipeline {
         		}
         	}
         }
+		stage('Push Docker React Image') {
+      	    steps {
+        		echo "Push Docker Image"
+        		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+        			sh "docker login -u atse2 -p Cladiana@1991#\$"
+        		}
+				script {
+        			react.push("${env.BUILD_ID}")
+	      	    }
+			}
+    	}
 
 		stage('Push Docker Main Image') {
       	    steps {
@@ -160,17 +171,6 @@ pipeline {
 			}
     	}
 
-		stage('Push Docker React Image') {
-      	    steps {
-        		echo "Push Docker Image"
-        		withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
-        			sh "docker login -u atse2 -p ${dockerhub}"
-        		}
-				script {
-        			react.push("${env.BUILD_ID}")
-	      	    }
-			}
-    	}
 		stage('Push Docker Auth Image') {
       	    steps {
         		echo "Push Docker Image"
