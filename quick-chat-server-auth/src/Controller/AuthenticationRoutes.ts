@@ -7,7 +7,10 @@ const router = express.Router();
 
 
 router.post("/login", async (req, res) => {
+
+    console.log("Request Received !");
     let request: User = req.body;
+    console.log("Request received with username as " + request.username );
     let response = await verifyUserLogin(request.username, request.password);
     if (response && response.email && response.username) {
         const token: string = tokenGenerator(response);

@@ -5,6 +5,7 @@ import { addUser, checkUser, fetchUser } from "../Datastore/datastore";
 export const verifyUserLogin  = async (username : string , password : string) : Promise<any>=>{
     if(username && password){
         const user = await fetchUser(username , password);
+        console.log("User found with details " + user.username);
         if(user && user.password){
             let passwordEncoded = user.password;
             let checkMatch : boolean = await bcrypt.compare(password , passwordEncoded);
