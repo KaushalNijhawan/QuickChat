@@ -18,6 +18,7 @@ spec:
       containers:
       - name: main-container
         image: atse2/quickchatmain:tagversion
+        imagePullPolicy: Always
         ports:
         - containerPort: 3001
         - containerPort: 4000

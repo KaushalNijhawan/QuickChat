@@ -18,6 +18,7 @@ spec:
       containers:
       - name: react-container
         image: atse2/quickchatreact:tagversion
+        imagePullPolicy: Always
         ports:
         - containerPort: 4002
 

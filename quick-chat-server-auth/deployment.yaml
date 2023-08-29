@@ -18,6 +18,7 @@ spec:
       containers:
       - name: auth-container
         image: atse2/quickchatauth:tagversion
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         volumeMounts:
