@@ -8,7 +8,11 @@ export class SocketIO {
     }
 
     init = (token: string , username: string ,  email: string) => {
+        console.log(token);
+        console.log(username);
+        console.log(email);
         if (token) {
+            console.log(token);
             return io(`http://${Constants.CHAT_MAIN_IP}:4000`,
                 {
                     auth: {

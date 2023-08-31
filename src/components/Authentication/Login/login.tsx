@@ -54,6 +54,7 @@ export const Login = () => {
 					"Content-Type":"application/json"
 				}
 				});
+				console.log(response);
 				if(response && response.data ){
 					let responseData  = response.data;
 					setItemsToLocalStorage(response.data.token,response.data.username ,response.data.email);

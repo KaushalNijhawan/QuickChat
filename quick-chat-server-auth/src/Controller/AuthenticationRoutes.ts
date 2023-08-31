@@ -12,6 +12,7 @@ router.post("/login", async (req, res) => {
     let request: User = req.body;
     console.log("Request received with username as " + request.username );
     let response = await verifyUserLogin(request.username, request.password);
+    console.log(response);
     if (response && response.email && response.username) {
         const token: string = tokenGenerator(response);
         res.setHeader('Content-Type', 'application/json');
