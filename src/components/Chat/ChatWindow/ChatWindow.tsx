@@ -183,9 +183,10 @@ export const ChatWindow = () => {
   }
 
   const handleDataFromModal = (data: GroupChat) => {
+    console.log(data);
     let socket = store.getState().socket.io;
     socket.emit("group-chat", data);
-    handleModal();
+    handleModalGroup();
   }
 
   const handleTabClick = async (k: string | null) => {
@@ -256,7 +257,7 @@ export const ChatWindow = () => {
           <div className="card">
             <div className="card-header">
               <h4 style={{display:"flex" , justifyContent : "space-between"}}>Hey, {store.getState().user.username}<span><i className="bi bi-box-arrow-right" onClick={handleSignOut}></i></span></h4> 
-              <a className="btn btn-outline-dark" onClick={handleModal}>Create Group</a>
+              <a className="btn btn-outline-dark" onClick={handleModalGroup}>Create Group</a>
             </div>
             <div className="card-body">
               <Tabs activeKey={key && key == "tab1" ? "tab1" : "tab2"} onSelect={(k) => handleTabClick(k)} className="text-secondary">
