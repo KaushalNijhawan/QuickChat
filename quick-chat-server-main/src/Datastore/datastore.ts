@@ -26,6 +26,7 @@ export const addChats = async (chatUser: ChatUser) =>{
             await datastore.save(childEntity);
             return "saved";
         }catch(err){
+            return err;
         }
     }
 }  
@@ -37,7 +38,7 @@ export const getChats = async () : Promise<any>=>{
         if(response && response.length > 0 ){
             let chatList : ChatUser[] = [];
             response.map((res)=>{
-                if(res && res.fromUsername && res.toUsername && res.messageContent){
+                if(res && res.fromUsername && res.toUsername ){
                     chatList.push({
                         fromUsername : res.fromUsername,
                         toUsername : res.toUsername,

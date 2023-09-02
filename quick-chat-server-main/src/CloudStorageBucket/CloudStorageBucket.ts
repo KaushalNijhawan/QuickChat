@@ -28,7 +28,7 @@ export const saveBucketVideo = async (videoData: ArrayBuffer, fileName: string) 
   const options : any = {
     version: 'v4',
     action: 'read',
-    expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+    expires: Date.now() +  72* 60 * 60 * 1000, // 15 minutes
   };
   const start  = new Date().valueOf();
   console.log(`File Uploaded with the time taken as ${((new Date().getTime() - start)/1000)}  seconds`);

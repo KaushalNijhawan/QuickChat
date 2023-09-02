@@ -60,6 +60,7 @@ export const ChatWindow = () => {
   const getChat = () => {
     setSpinner(true);
     getChats().then((res: ChatUser[]) => {
+      console.log(res);
       dispatching(addChats(res));
     }).finally(() => {
       setSpinner(false);
@@ -299,8 +300,13 @@ export const ChatWindow = () => {
                           <div className={provideTextHighlight(chatObj, toUsername)}>
                             {chatObj.type == "Text" ?
                               <p>{provideTextHighlight(chatObj, toUsername) ? chatObj.messageContent : null}</p> :
-                              chatObj.type == "video" ? chatObj.specialMessage.messageVideoBuffer.byteLength > 0  ?
-                                < video src={URL.createObjectURL(new Blob([chatObj.specialMessage.messageVideoBuffer], { type: 'video/mp4' }))} controls
+                              chatObj.type == "images" ? <img src = {chatObj.specialMessage.specialMessagelink} height="200px" width="150px"/> :
+                              chatObj.type == "audio" ? <audio controls muted>
+                              <source src={chatObj.specialMessage.specialMessagelink} type="audio/mp3" />
+                          </audio> 
+                          : 
+                              chatObj.type == "video" ? chatObj.specialMessage.specialMessagelink ?
+                                < video src= {chatObj.specialMessage.specialMessagelink} controls
                                   style={{ height: "200px", width: "300px" }} /> : 
                                   <div className="boxy-video-screen">
                                     <Spinner animation="border" variant="primary" />
@@ -351,7 +357,17 @@ export const ChatWindow = () => {
                       <div className="mb-3" key={index}>
                         <div className={provideClassPlacementGroup(chatObj, toUsername)}>
                           <div className={provideTextHighlightGroup(chatObj, toUsername)}>
-                            <p>{provideTextHighlightGroup(chatObj, toUsername) ? chatObj.messageContent : null}</p>
+                          {chatObj.type == "Text" ?
+                              <p>{provideTextHighlightGroup(chatObj, toUsername) ? chatObj.messageContent : null}</p> :
+                              chatObj.type == "audio" ? <audio src = {chatObj.specialMessage.specialMessagelink} /> :
+                              chatObj.type == "images" ? <img src = {chatObj.specialMessage.specialMessagelink} height="200px" width="150px"/> : 
+                              chatObj.type == "video" ? chatObj.specialMessage.specialMessagelink ?
+                                < video src={URL.createObjectURL(new Blob([chatObj.specialMessage.messageVideoBuffer], { type: 'video/mp4' }))} controls
+                                  style={{ height: "200px", width: "300px" }} /> : 
+                                  <div className="boxy-video-screen">
+                                    <Spinner animation="border" variant="primary" />
+                                  </div>
+                                : null}
                           </div>
                         </div>
                       </div>

@@ -48,6 +48,9 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
             case "files":
                 handleVideoFiles(file, socket, type);
                 break;
+            case "images":
+                handleVideoFiles(file, socket, type);
+                break;
             case "video":
                 handleVideoFiles(file, socket, type);
                 break;
@@ -92,16 +95,11 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
     const handleVideoFiles = async (file : File , socket: Socket , type : string) =>{
         if(file && socket && type){
             socket.emit("uploadStart" , { name: file.name, size: file.size });
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('fromUsername' , store.getState().user.username);
-            formData.append('toUsername' , props.toUsername);
-            console.log(props.groupToggle);
             if(props.groupToggle){
                 uploadFileGroup(store.getState().user.username,  props.toUsernames , store.getState().groupChat.get(props.toUsername)?.length != undefined ? store.getState().groupChat.get(props.toUsername)?.length as number + 1 : 1 
-                , props.toUsername , file , type);
+                , props.toUsername , file , type, file.name);
             }else{
-              let response : ChatUser = await uploadFilePrivate(store.getState().user.username,props.toUsername , store.getState().chat.length + 1 ,file, type);
+              let response : ChatUser = await uploadFilePrivate(store.getState().user.username,props.toUsername , store.getState().chat.length + 1 ,file, type,  file.name);
               console.log(response);
               if(store.getState().chat){
                 let chats : ChatUser[] = store.getState().chat.filter((chat)=> chat.specialMessage.specialMessagelink);
@@ -147,7 +145,7 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
                             </a>
                         </div>
                         <div className="custom-file" style={{ display: "none" }}>
-                            <input type="file" className="custom-file-input" id="customFile4" accept="image/*" onChange={(e) => handleChangeFile(e, "files")} />
+                            <input type="file" className="custom-file-input" id="customFile4" accept="image/*" onChange={(e) => handleChangeFile(e, "images")} />
                         </div>
                         <div className="input-group-append">
                             <a style={{ textDecoration: "none", textDecorationColor: "black" }} onClick={() => document?.getElementById('customFile4')?.click()}>

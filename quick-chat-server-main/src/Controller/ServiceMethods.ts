@@ -74,8 +74,8 @@ export const compressVideo = (filePath : string, outputFileName : string,sizeRed
   });
 }
 
-export const saveSpecialChatFromPrivate = (fromUsername : string , toUsername : string ,storageBucketFileLink : string , Id : number  , type: string) =>{
-  const specialMessage : SpecialMessage =   {specialMessagelink : storageBucketFileLink , isDownloaded : false ,messageVideoBuffer : new ArrayBuffer(0)};
+export const saveSpecialChatFromPrivate = async (fromUsername : string , toUsername : string ,storageBucketFileLink : string , Id : number  , type: string) =>{
+  const specialMessage : SpecialMessage =   {specialMessagelink : storageBucketFileLink , isDownloaded : false , messageVideoBuffer : null};
   let chatUser : ChatUser = {
     fromUsername : fromUsername,
     Id : Id,
@@ -85,7 +85,7 @@ export const saveSpecialChatFromPrivate = (fromUsername : string , toUsername : 
     type  : type,
     toUsername : toUsername
   }  
-  addChats(chatUser);
+  await console.log(addChats(chatUser).then((res)=> console.log(res)));
 }
 
 export const saveSpecialChatFromGroup = (fromUsername : string , toUsernames: string ,storageBucketFileLink : string , Id : number, groupTitle : string , type : string ) =>{

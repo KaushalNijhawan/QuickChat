@@ -144,7 +144,7 @@ export const getGroupChats = async (username: string, groupTitle: string): Promi
     return [];
 }
 
-export const uploadFileGroup = async (fromUsername: string,toUsernames: string[], ID : number , groupTitle : string , file : File, type: string) =>{
+export const uploadFileGroup = async (fromUsername: string,toUsernames: string[], ID : number , groupTitle : string , file : File, type: string, filename : string) =>{
     try{
         const formData = new FormData();
         formData.append('fromUsername' , fromUsername);
@@ -153,8 +153,8 @@ export const uploadFileGroup = async (fromUsername: string,toUsernames: string[]
         formData.append('toUsernames' , toUsernames.toString());
         formData.append('file' , file);
         formData.append('type', type);
+        formData.append('filename', filename);
         let response = await axios.post(`http://${Constants.CHAT_MAIN_IP}:3001/token/upload/group`, formData);
-        console.log(response);
         if(response && response.data){
             let groupChat : GroupChatMessage = {
                 fromUsername : fromUsername,
@@ -163,8 +163,8 @@ export const uploadFileGroup = async (fromUsername: string,toUsernames: string[]
                 messageContent : "",
                 specialMessage : {
                     isDownloaded : true,
-                    specialMessagelink : "some-link",
-                    messageVideoBuffer : response.data
+                    specialMessagelink : response.data.specialMessage.specialMessagelink,
+                    messageVideoBuffer : null
                 },
                 timestamp : new Date().valueOf(),
                 type : type,
@@ -179,7 +179,7 @@ export const uploadFileGroup = async (fromUsername: string,toUsernames: string[]
     }
 }
 
-export const uploadFilePrivate = async (fromUsername: string,toUsername: string, ID : number , file  : File, type : string ) : Promise<any> =>{
+export const uploadFilePrivate = async (fromUsername: string,toUsername: string, ID : number , file  : File, type : string , filename : string) : Promise<any> =>{
     try{
         const formData = new FormData();
         formData.append('fromUsername' , fromUsername);
@@ -187,10 +187,14 @@ export const uploadFilePrivate = async (fromUsername: string,toUsername: string,
         formData.append('ID' , ID.toString());
         formData.append('file', file);
         formData.append('type', type);
+        formData.append('filename' , filename);
 
         let response = await axios.post(`http://${Constants.CHAT_MAIN_IP}:3001/token/upload/private`, formData, {
-            responseType : "arraybuffer"
+            headers:{
+                'Content-Type': 'multipart/form-data'
+            }
         });
+        console.log(response)
         if(response && response.data){
             let privateChat : ChatUser = {
                 fromUsername: fromUsername,
@@ -199,8 +203,8 @@ export const uploadFilePrivate = async (fromUsername: string,toUsername: string,
                 messageContent : "",
                 specialMessage : {
                     isDownloaded : true,
-                    specialMessagelink : "some-link",
-                    messageVideoBuffer : response.data
+                    specialMessagelink : response.data.specialMessage.specialMessagelink,
+                    messageVideoBuffer : null
                 },
                 timestamp : new Date().valueOf(),
                 type : type
