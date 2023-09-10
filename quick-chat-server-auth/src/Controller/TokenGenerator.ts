@@ -4,7 +4,7 @@ export const tokenGenerator = (user: User): string => {
     if (user && user.username && user.password) {
         const payload = {
             username: user.username,
-            exp: Math.floor(Date.now() / 1000) + (60 * 60),
+            exp: Math.floor(Date.now() / 1000) + (60 * 60*24),
 
         }
         let token = sign(payload, user.username + "," + user.email);
