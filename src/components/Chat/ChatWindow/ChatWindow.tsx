@@ -22,8 +22,8 @@ export const ChatWindow = () => {
   let initialState: Map<String, User> = new Map();
   const [showGroupModal, setGroupModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [chats, setChats] = useState<any>();
   const [showSpinner, setSpinner] = useState(false);
+  const [chats, setChats] = useState<any>();
   const [key, setKey] = useState<string | null>("tab1");
   const [currMessage, setCurrMessgae] = useState("");
   const [toUsername, setToUsername] = useState("");
@@ -120,8 +120,8 @@ export const ChatWindow = () => {
     }
   }
 
-  const handleGroupChat = (socket: Socket, toUsername: string[], message: string, groupTitle: string, type: string) => {
-    const specialMessage: SpecialMessage = { specialMessagelink: "some-link", isDownloaded: true, messageVideoBuffer : new ArrayBuffer(0) };
+  const handleGroupChat = (socket: Socket, toUsername: string[], message: string, groupTitle: string, type: string, specialMessagelink ?: string) => {
+    const specialMessage: SpecialMessage = { specialMessagelink: specialMessagelink ? specialMessagelink : "some-link", isDownloaded: true, messageVideoBuffer : new ArrayBuffer(0) };
 
     let groupChat: GroupChatMessage = {
       fromUsername: store.getState().user.username,
@@ -149,12 +149,20 @@ export const ChatWindow = () => {
       } else {
         dispatching(appendChat(specialMessage as ChatUser));
       }
+      if(groupToggle){
+        specialMessage = specialMessage as GroupChatMessage; 
+        handleGroupChat(store.getState().socket.io, specialMessage.toUsernames, specialMessage.messageContent, specialMessage.fromUsername, specialMessage.type, specialMessage.specialMessage.specialMessagelink);
+      }else{
+        specialMessage = specialMessage as ChatUser;
+        handlePrivateChat(specialMessage.toUsername, specialMessage.messageContent , store.getState().socket.io, specialMessage.type,
+        specialMessage.specialMessage.specialMessagelink);
+      }
       setChats(specialMessage);
     }
   }
 
-  const handlePrivateChat = (toUsername: string, messageContent: string, socket: Socket, type: string) => {
-    const specialMessage: SpecialMessage = { specialMessagelink: "some-link", isDownloaded: true , messageVideoBuffer : new ArrayBuffer(0)};
+  const handlePrivateChat = (toUsername: string, messageContent: string, socket: Socket, type: string, specialMessagelink ?: string) => {
+    const specialMessage: SpecialMessage = { specialMessagelink: specialMessagelink ? specialMessagelink : "some-link" , isDownloaded: true , messageVideoBuffer : new ArrayBuffer(0)};
     const chatMessage: ChatUser = {
       fromUsername: store.getState().user.username,
       toUsername: toUsername,
@@ -167,12 +175,11 @@ export const ChatWindow = () => {
     socket.emit("private-message", chatMessage);
 
     socket.on("private-chat", (message: ChatUser) => {
-      if(toUsername){
-        dispatching(appendChat(message));
-      }
-      
+      dispatching(appendChat(message));
       setChats(message);
     });
+
+    console.log(store.getState().chat);
   }
 
   const handleModal = () => {
@@ -186,7 +193,9 @@ export const ChatWindow = () => {
   const handleDataFromModal = (data: GroupChat) => {
     console.log(data);
     let socket = store.getState().socket.io;
+    dispatching(appendGroups(data));
     socket.emit("group-chat", data);
+    handleTabClick("tab2");
     handleModalGroup();
   }
 
@@ -194,6 +203,9 @@ export const ChatWindow = () => {
     if (k == "tab1") {
       setGroupToggle(false);
     } else {
+      let socket = store.getState().socket.io;
+      socket.emit("tab-click");
+      
       setGroupToggle(true);
     }
     setKey(k);
@@ -242,6 +254,10 @@ export const ChatWindow = () => {
     setErrorModal(!errorModal);
   }
 
+  const touchedDiv = () =>{
+    console.log('here');
+  }
+
   const handleSignOut = () =>{
       dispatch(resetChats(null));
       dispatch(resetConnection(null));
@@ -286,7 +302,7 @@ export const ChatWindow = () => {
           <FullPageLoader show={showSpinner} />
           :
           !groupToggle ?
-            <div className="col-md-8">
+            <div className="col-md-8" onClick={touchedDiv}>
               <div className={toUsername ? "card" : "card opacity-50"}>
                 <div className="card-header">
                   {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}
@@ -345,7 +361,7 @@ export const ChatWindow = () => {
               </div>
             </div>
             :
-            <div className="col-md-8">
+            <div className="col-md-8" onClick={touchedDiv}>
               <div className={toUsername ? "card" : "card opacity-50"}>
                 <div className="card-header">
                   {toUsername ? <h4>Chat with {toUsername}!</h4> : <h4>Let's Beign Chat Guys!</h4>}

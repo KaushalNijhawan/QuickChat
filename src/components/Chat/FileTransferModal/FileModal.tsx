@@ -55,40 +55,6 @@ toUsernames : string[] , handleSpecialMessage(chatObject : ChatUser | GroupChatM
                 handleVideoFiles(file, socket, type);
                 break;
         }
-        if(props.groupToggle){
-            let groupChat : GroupChatMessage = {
-                fromUsername : store.getState().user.username,
-                groupTitle : props.toUsername ,
-                Id : store.getState().groupChat.get(props.toUsername)?.length != undefined ? store.getState().groupChat.get(props.toUsername)?.length as number + 1 : 1,
-                messageContent : "dummy",
-                specialMessage : {
-                    isDownloaded : true,
-                    specialMessagelink : "",
-                    messageVideoBuffer : new ArrayBuffer(0)
-                },
-                timestamp : new Date().valueOf(),
-                type : type,
-                toUsernames : props.toUsernames
-            }
-            props.handleSpecialMessage(groupChat);
-        }else{
-             let privateChat : ChatUser = {
-                fromUsername : store.getState().user.username,
-                Id : store.getState().chat.length + 1,
-                messageContent : "dummy",
-                toUsername : props.toUsername,
-                timestamp : new Date().valueOf(),
-                type : type,
-                specialMessage : 
-                {
-                    isDownloaded : true,
-                    specialMessagelink : "",
-                    messageVideoBuffer : new ArrayBuffer(0)
-                }
-                
-             }
-             props.handleSpecialMessage(privateChat);
-        }
         props.handleClose();
     }
 

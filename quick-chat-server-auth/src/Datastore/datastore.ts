@@ -49,7 +49,6 @@ export const addUser = async({username , password , email }:{username: string , 
 
 
  export const fetchUser = async(username : string , password : string) : Promise<any> =>{
-  console.log(datastore);    
   if(username && password){
           const query = datastore.createQuery("ChatUser" , "User").filter("username" , "=" , username).limit(1);
 

@@ -47,6 +47,7 @@ export const Login = () => {
 		validateLoginForm();
 		if(state.username && state.password){
 			try{
+				console.log(`http://${Constants.CHAT_AUTH_IP}:3000/auth/login`);
 				setLoading(true);
 				const response = await axios.post(`http://${Constants.CHAT_AUTH_IP}:3000/auth/login` , state ,  {
 				headers:{

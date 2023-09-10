@@ -43,7 +43,7 @@ export const getChats = async () : Promise<any>=>{
                         fromUsername : res.fromUsername,
                         toUsername : res.toUsername,
                         messageContent : res.messageContent,
-                        timestamp : res.timeStamp,
+                        timestamp : res.timestamp,
                         Id: res.Id,
                         type : res.type,
                         specialMessage : res.specialMessage

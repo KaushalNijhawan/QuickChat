@@ -34,17 +34,27 @@ if (!io.listenerCount('connection')) {
         if (response) {
             socket.on("private-message", (responseObject: ChatUser) => {
                 socket.join("private-chat-room");
-                if (responseObject && responseObject.messageContent.length > 0) {
-                    addChats(responseObject).then((res: any) => {
-                        console.log(res);
-
-                    });
+                if (responseObject && ((responseObject.messageContent.length > 0) || (responseObject.specialMessage.specialMessagelink
+                    && responseObject.specialMessage.specialMessagelink != "som-link"))) {
+                    
+                        if(responseObject.messageContent ){
+                            addChats(responseObject).then((res: any) => {
+                                console.log(res);
+                            });
+                        }
+                        
                 }
                 io.to("private-chat-room").emit("private-chat", responseObject);
             });
+            socket.on("tab-click" , ()=>{
+                socket.join("tab-group");
+            });
             socket.on("group-chat", (groupChatObject: GroupChat) => {
                 addGroup(groupChatObject).then((res) => console.log(res));
+                io.to("tab-group").emit("hitTab");
             });
+            
+
 
             socket.on("join-group", (groupTitle: string) => {
                 socket.join(groupTitle);
@@ -52,9 +62,13 @@ if (!io.listenerCount('connection')) {
 
             socket.on("group-message", (groupChatMessage: groupChatMessage) => {
 
-                if (groupChatMessage.messageContent.length > 0) {
+                if ((groupChatMessage.messageContent.length > 0) || (groupChatMessage.specialMessage.specialMessagelink && 
+                    groupChatMessage.specialMessage.specialMessagelink != "some-link")) {
                     // save this message 
-                    saveGroupChat(groupChatMessage).then((res) => { console.log(res) });
+                    if(groupChatMessage.messageContent){
+                        saveGroupChat(groupChatMessage).then((res) => { console.log(res) });
+                    }
+                    
                 }
                 io.to(groupChatMessage.groupTitle).emit("group-discussion", groupChatMessage);
             });
